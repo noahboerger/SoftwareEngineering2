@@ -64,6 +64,7 @@
                 </configuration>
             </plugin>
 
+            <!-- Konfigurationen fuer das Bauen einer Runnable-Jar mit JavaFX -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -101,9 +102,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-
-
         </plugins>
     </build>
 </project>
