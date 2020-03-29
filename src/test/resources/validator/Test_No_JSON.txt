@@ -1,0 +1,123 @@
+{
+  "rows": [
+    {
+      "fields": [
+        {
+          "type": "HINT_FIELD",
+          "arrow": "RIGHT",
+          "amount": "2"
+        },
+        {
+          "type": "HINT_FIELD",
+          "arrow": "RIGHT",
+          "amount": "2"
+        },
+        {
+          "type": "STANDARD_FIELD"
+        },
+        {
+          "type": "STANDARD_FIELD"
+        },
+        {
+          "type": "HINT_FIELD",
+          "arrow": "DOWN",
+          "amount": "1"
+        }
+      ]
+    },
+    {
+      "fields": [
+        {
+          "type": "STANDARD_FIELD"
+        },
+        {
+          "type": "STANDARD_FIELD"
+        },
+        {
+          "type": "HINT_FIELD",
+          "arrow": "DOWN",
+          "amount": "1"
+        },
+        {
+          "type": "STANDARD_FIELD"
+        },
+        {
+          "type": "HINT_FIELD",
+          "arrow": "UP",
+          "amount": "0"
+        }
+      ]
+    },
+    {
+      "fields": [
+        {
+          "type": "STANDARD_FIELD"
+        },
+        {
+          "type": "HINT_FIELD",
+          "arrow": "RIGHT",
+          "amount": "1"
+        },
+        {
+          "type": "STANDARD_FIELD"
+        },
+        {
+          "type": "HINT_FIELD",
+          "arrow": "LEFT",
+          "amount": "2"
+        },
+        {
+          "type": "STANDARD_FIELD"
+        }
+      ]
+    },
+    {
+      "fields": [
+        {
+          "type": "HINT_FIELD",
+          "arrow": "UP",
+          "amount": "1"
+        },
+        {
+          "type": "STANDARD_FIELD"
+        },
+        {
+          "type": "HINT_FIELD",
+          "arrow": "UP",
+          "amount": "0"
+        },
+        {
+          "type": "STANDARD_FIELD"
+        },
+        {
+          "type": "STANDARD_FIELD"
+        }
+      ]
+    },
+    {
+      "fields": [
+        {
+          "type": "HINT_FIELD",
+          "arrow": "RIGHT",
+          "amount": "3"
+        },
+        {
+          "type": "STANDARD_FIELD"
+        },
+        {
+          "type": "STANDARD_FIELD"
+        },
+        {
+          "type": "HINT_FIELD",
+          "arrow": "LEFT",
+          "amount": "1"
+        },
+        {
+          "type": "HINT_FIELD",
+          "arrow": "LEFT",
+          "amount": "2"
+        }
+      ]
+    }
+  ]
+}

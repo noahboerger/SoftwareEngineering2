@@ -6,8 +6,10 @@ import de.dhbw.mosbach.matchfield.fields.HintField;
 import de.dhbw.mosbach.matchfield.fields.StandardField;
 
 import java.io.*;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Stream;
@@ -18,18 +20,25 @@ public class JSONMatchFieldParser {
 
     private final ParsingResult parsingResult;
 
-    public static void main(String[] args) {
-        JSONMatchFieldParser parser = new JSONMatchFieldParser("C:/Users/Noah Börger/Desktop/test.json");
-        System.out.println(parser.parsingResult.parsingValidationResult);
-    }
-
     public JSONMatchFieldParser(String filePathMatchFieldFile) {
         this.filePathMatchFieldFile = filePathMatchFieldFile;
         parsingResult = parseFile();
     }
 
     public enum ParsingValidationResult {
-        IO_EXCEPTION, FILE_NOT_VALID, PARSED_SUCCESSFUL
+        IO_EXCEPTION("Laden der Datei ist fehlgeschlagen!"),
+        FILE_NOT_VALID("Die JSON beinhaltet kein valides Spielfeld!"),
+        PARSED_SUCCESSFUL("JSON wurde erfolgreich geparsed.");
+
+        private String errorMessage;
+
+        ParsingValidationResult(String errorMessage) {
+            this.errorMessage = errorMessage;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
     }
 
     private static class ParsingResult {
@@ -51,7 +60,6 @@ public class JSONMatchFieldParser {
             return new ParsingResult(null, ParsingValidationResult.IO_EXCEPTION);
         }
         String jsonString = contentBuilder.toString();
-        System.out.println(jsonString);
         jsonString = jsonString.replaceFirst("(?s)[}](?!.*?[}])", "");
         List<List<Field>> parsedField;
         try {
@@ -120,7 +128,6 @@ public class JSONMatchFieldParser {
             String key = keyValueSplit[0].trim().replaceAll("\"", "").toUpperCase();
             String value = keyValueSplit[1].trim().replaceAll("\"", "").toUpperCase();
             returnMap.put(key, value);
-            System.out.println("Key: " + key + " Value: " + value);
         }
         return returnMap;
     }
