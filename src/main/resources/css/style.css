@@ -19,3 +19,7 @@
 .WHITE {
     -fx-background-color: #FFFFFF;
 }
+
+.whiteFont {
+    -fx-text-fill: white;
+}

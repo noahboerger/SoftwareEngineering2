@@ -21,7 +21,7 @@ public class HintField extends AbstractField {
             this.arrowSymbol = arrowSymbol;
         }
 
-        public char getArrowSymbol() {
+        public char toCharacter() {
             return arrowSymbol;
         }
     }

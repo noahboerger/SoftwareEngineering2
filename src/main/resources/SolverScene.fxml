@@ -10,8 +10,9 @@
         <menus>
           <Menu mnemonicParsing="false" text="Spiel">
             <items>
-                  <MenuItem mnemonicParsing="false" onAction="#handleStep" text="Schritt (F5)" />
-                  <MenuItem mnemonicParsing="false" onAction="#handleFullSolution" text="Lösen (F6)" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleStep" text="Schritt weiter (F5)" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleFullSolution" text="Vollständig Lösen (F6)" />
+                  <MenuItem mnemonicParsing="false" onAction="#handleStepBack" text="Schritt zurück (F7)" />
               <MenuItem mnemonicParsing="false" onAction="#handleBackToMenu" text="Schließen (F8)" />
             </items>
           </Menu>

@@ -71,6 +71,7 @@ public class MenuSceneController {
         solverSceneController.init(new YajisanKazusanSolver(parser.getMatchFieldOfParsedJSON().orElseGet(null)));
 
         Scene solverScene = new Scene(solver);
+        solverScene.setOnKeyPressed(solverSceneController::onKeyboardPress);
         solverScene.getStylesheets().add(getClass().getClassLoader().getResource("css/style.css").toExternalForm());
 
         activeStage.setScene(solverScene);
@@ -111,6 +112,7 @@ public class MenuSceneController {
         event.consume();
     }
 
+    @FXML
     public void handleDragOverEvent(DragEvent event) {
         Dragboard db = event.getDragboard();
         if (event.getDragboard().hasFiles()) {

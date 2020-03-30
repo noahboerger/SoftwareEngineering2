@@ -1,9 +1,11 @@
 package de.dhbw.mosbach.solve;
 
 import de.dhbw.mosbach.matchfield.MatchField;
+import de.dhbw.mosbach.matchfield.fields.FieldState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class YajisanKazusanSolver {
 
@@ -36,10 +38,6 @@ public class YajisanKazusanSolver {
         }
     }
 
-    private void solve() {
-        System.out.println("Solving is not supported right now!!!");
-    }
-
     public MatchField getUnsolvedMatchField() {
         return MatchField.deepCopy(unsolvedMatchField);
     }
@@ -58,5 +56,16 @@ public class YajisanKazusanSolver {
             isSolved = true;
         }
         return List.copyOf(solvingOrderList);
+    }
+
+    private void solve() {
+        for(int x = 0; x < solvedMatchField.getSize(); x++) {
+            for(int y = 0; y < solvedMatchField.getSize(); y++) {
+                FieldState randomState = new Random().nextBoolean() ? FieldState.WHITE: FieldState.BLACK;
+                solvedMatchField.getFieldAt(x,y).setFieldState(randomState);
+                solvingOrderList.add(new FieldIndex(x,y));
+            }
+        }
+        System.out.println("Solving is not supported right now!!!");
     }
 }
