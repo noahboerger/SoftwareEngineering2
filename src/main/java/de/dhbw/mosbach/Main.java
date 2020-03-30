@@ -13,10 +13,14 @@ public class Main extends Application {
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
-        Parent menu = FXMLLoader.load(getClass().getClassLoader().getResource("MenuScene.fxml"));
+    public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Yajisan-Kazusan");
-        primaryStage.setScene(new Scene(menu));
+
+        Parent menu = FXMLLoader.load(getClass().getClassLoader().getResource("MenuScene.fxml"));
+        Scene menuScene = new Scene(menu);
+        menuScene.getStylesheets().add(getClass().getClassLoader().getResource("css/style.css").toExternalForm());
+        primaryStage.setScene(menuScene);
+        primaryStage.setResizable(false);
         primaryStage.show();
     }
 }

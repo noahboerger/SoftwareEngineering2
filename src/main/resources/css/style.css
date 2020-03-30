@@ -1,0 +1,21 @@
+.MATCH {
+    -fx-border-color: #000000;
+}
+
+.FIELD {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #000000;
+    -fx-border-width: 1;
+}
+
+.UNKNOWN {
+    -fx-background-color: #E3E3E3;
+}
+
+.BLACK {
+    -fx-background-color: #000000;
+}
+
+.WHITE {
+    -fx-background-color: #FFFFFF;
+}

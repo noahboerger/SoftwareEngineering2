@@ -20,7 +20,6 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.ResourceBundle;
 
 public class MenuSceneController {
 
@@ -71,9 +70,10 @@ public class MenuSceneController {
         SolverSceneController solverSceneController = loader.getController();
         solverSceneController.init(new YajisanKazusanSolver(parser.getMatchFieldOfParsedJSON().orElseGet(null)));
 
-        activeStage.setScene(new Scene(solver));
-        activeStage.setTitle("Second Window");
-        activeStage.show();
+        Scene solverScene = new Scene(solver);
+        solverScene.getStylesheets().add(getClass().getClassLoader().getResource("css/style.css").toExternalForm());
+
+        activeStage.setScene(solverScene);
     }
 
     //Menu-Bar

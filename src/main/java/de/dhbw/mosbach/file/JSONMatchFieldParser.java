@@ -66,12 +66,29 @@ public class JSONMatchFieldParser {
         MatchField parsedField;
 
         try {
-            List<List<Field>> parsedFieldsList = parseFullField(jsonString);
-            parsedField = new MatchField(parsedFieldsList);
+            List<List<Field>> parsingResult = parseFullField(jsonString);
+            List<List<Field>> parsingResultCorrect = correctDimensions(parsingResult);
+            parsedField = new MatchField(parsingResultCorrect);
         } catch (IllegalArgumentException iae) {
             return new ParsingResult(null, ParsingValidationResult.FILE_NOT_VALID);
         }
         return new ParsingResult(parsedField, ParsingValidationResult.PARSED_SUCCESSFUL);
+    }
+
+    private List<List<Field>> correctDimensions(List<List<Field>> parsingResult) {
+        List<List<Field>> corrected = new ArrayList<>();
+        Optional<Integer> numberOfColumns = parsingResult.stream().map(row -> row.size()).reduce(Integer::max);
+
+        for(int column = 0; column < numberOfColumns.orElse(0); column++) {
+            corrected.add(new ArrayList<>());
+        }
+
+        for(int y = 0; y < parsingResult.size(); y++) {
+            for (int x = 0; x < parsingResult.get(y).size(); x++) {
+                corrected.get(x).add(parsingResult.get(y).get(x));
+            }
+        }
+        return corrected;
     }
 
     private List<List<Field>> parseFullField(String jsonFullFieldString) {
@@ -80,7 +97,7 @@ public class JSONMatchFieldParser {
             throw new IllegalArgumentException();
         }
         String jsonFullFieldStringTrimmed = jsonFullFieldString.substring(jsonFullFieldString.indexOf('[') + 1, jsonFullFieldString.lastIndexOf(']')).trim();
-        for (String jsonRowString : firstLevelJSONArraySplit(jsonFullFieldString)) {
+        for (String jsonRowString : firstLevelJSONArraySplit(jsonFullFieldStringTrimmed)) {
             parsedField.add(parseRowString(jsonRowString));
         }
         return parsedField;

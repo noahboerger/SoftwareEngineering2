@@ -14,6 +14,7 @@ public class JSONMatchFieldParserTest {
         URL url = getClass().getClassLoader().getResource("parser/Test_Valid.json");
         JSONMatchFieldParser parser = new JSONMatchFieldParser(Paths.get(url.toURI()).toString());
         Assert.assertEquals(JSONMatchFieldParser.ParsingValidationResult.PARSED_SUCCESSFUL, parser.getParsingValidationResult().get());
+        Assert.assertEquals(5, parser.getMatchFieldOfParsedJSON().get().getSize());
     }
 
     @Test

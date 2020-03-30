@@ -12,7 +12,18 @@ public class HintField extends AbstractField {
     }
 
     public enum ArrowDirection {
-        UP, RIGHT, DOWN, LEFT
+        UP('↑'), RIGHT('→'), DOWN('↓'), LEFT('←');
+
+        private final char arrowSymbol;
+
+        ArrowDirection(char arrowSymbol) {
+
+            this.arrowSymbol = arrowSymbol;
+        }
+
+        public char getArrowSymbol() {
+            return arrowSymbol;
+        }
     }
 
     public ArrowDirection getArrowDirection() {
