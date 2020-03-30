@@ -14,9 +14,9 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("MenuScene.fxml"));
+        Parent menu = FXMLLoader.load(getClass().getClassLoader().getResource("MenuScene.fxml"));
         primaryStage.setTitle("Yajisan-Kazusan");
-        primaryStage.setScene(new Scene(root));
+        primaryStage.setScene(new Scene(menu));
         primaryStage.show();
     }
 }

@@ -60,14 +60,18 @@ public class JSONMatchFieldParser {
             return new ParsingResult(null, ParsingValidationResult.IO_EXCEPTION);
         }
         String jsonString = contentBuilder.toString();
-        jsonString = jsonString.replaceFirst("(?s)[}](?!.*?[}])", "");
-        List<List<Field>> parsedField;
+
+        jsonString = jsonString.replaceFirst("[{]", "").replaceFirst("(?s)[}](?!.*?[}])", "");
+
+        MatchField parsedField;
+
         try {
-            parsedField = parseFullField(jsonString);
+            List<List<Field>> parsedFieldsList = parseFullField(jsonString);
+            parsedField = new MatchField(parsedFieldsList);
         } catch (IllegalArgumentException iae) {
             return new ParsingResult(null, ParsingValidationResult.FILE_NOT_VALID);
         }
-        return new ParsingResult(new MatchField(parsedField), ParsingValidationResult.PARSED_SUCCESSFUL);
+        return new ParsingResult(parsedField, ParsingValidationResult.PARSED_SUCCESSFUL);
     }
 
     private List<List<Field>> parseFullField(String jsonFullFieldString) {
@@ -75,8 +79,8 @@ public class JSONMatchFieldParser {
         if (!jsonFullFieldString.contains("\"rows\":")) {
             throw new IllegalArgumentException();
         }
-        String jsonFullFieldStringTrimmed = jsonFullFieldString.substring(jsonFullFieldString.indexOf('{') + 1, jsonFullFieldString.lastIndexOf('}')).trim();
-        for (String jsonRowString : firstLevelJSONArraySplit(jsonFullFieldStringTrimmed)) {
+        String jsonFullFieldStringTrimmed = jsonFullFieldString.substring(jsonFullFieldString.indexOf('[') + 1, jsonFullFieldString.lastIndexOf(']')).trim();
+        for (String jsonRowString : firstLevelJSONArraySplit(jsonFullFieldString)) {
             parsedField.add(parseRowString(jsonRowString));
         }
         return parsedField;

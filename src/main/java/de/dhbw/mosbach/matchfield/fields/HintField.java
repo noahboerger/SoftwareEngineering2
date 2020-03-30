@@ -27,4 +27,11 @@ public class HintField extends AbstractField {
     public String toString() {
         return "HintField [" + super.toString() +" ArrowDirection: " + arrowDirection + " Amount: " + amount +"]";
     }
+
+    @Override
+    public Field deepCopy() {
+        HintField copy = new HintField(this.arrowDirection, this.amount);
+        copy.setFieldState(this.fieldState);
+        return copy;
+    }
 }

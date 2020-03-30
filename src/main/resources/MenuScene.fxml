@@ -7,18 +7,18 @@
 
 <AnchorPane xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.dhbw.mosbach.gui.MenuSceneController">
    <children>
-      <VBox alignment="CENTER" prefHeight="201.0" prefWidth="281.0" spacing="10.0">
+      <VBox alignment="CENTER" onDragDropped="#handleDragDroppedEvent" onDragOver="#handleDragOverEvent" prefHeight="201.0" prefWidth="281.0" spacing="10.0">
          <children>
             <MenuBar prefHeight="30.0" prefWidth="281.0">
               <menus>
                 <Menu mnemonicParsing="false" text="Programm">
                   <items>
-                    <MenuItem mnemonicParsing="false" onAction="#exitProgram" text="Beenden" />
+                    <MenuItem mnemonicParsing="false" onAction="#handleExitProgram" text="Beenden" />
                   </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="Hilfe">
                      <items>
-                        <MenuItem mnemonicParsing="false" onAction="#help" text="Anzeigen" />
+                        <MenuItem mnemonicParsing="false" onAction="#handleHelp" text="Anzeigen" />
                      </items></Menu>
               </menus>
             </MenuBar>
@@ -31,11 +31,11 @@
                <children>
                   <Label text="Datei:" />
                   <TextField fx:id="filePathField" prefWidth="149.0" />
-                  <Button mnemonicParsing="false" onAction="#chooseFile" text="auswählen" />
+                  <Button mnemonicParsing="false" onAction="#handleChooseFile" text="auswählen" />
                </children>
             </HBox>
             <Label text="&lt;&lt;oder JSON hier hinziehen&gt;&gt;" textAlignment="CENTER" />
-            <Button alignment="CENTER" mnemonicParsing="false" onAction="#startMainScene" prefWidth="150.0" text="Ausgewähltes Spiel lösen" textAlignment="CENTER">
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#handleStartMainScene" prefWidth="150.0" text="Ausgewähltes Spiel lösen" textAlignment="CENTER">
                <VBox.margin>
                   <Insets top="5.0" />
                </VBox.margin></Button>

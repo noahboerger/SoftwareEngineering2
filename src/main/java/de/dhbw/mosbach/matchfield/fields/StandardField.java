@@ -10,4 +10,11 @@ public class StandardField extends AbstractField {
     public String toString() {
         return "StandardField [" + super.toString() + "]";
     }
+
+    @Override
+    public Field deepCopy() {
+        StandardField copy = new StandardField();
+        copy.setFieldState(this.fieldState);
+        return copy;
+    }
 }
