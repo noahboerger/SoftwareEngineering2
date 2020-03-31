@@ -5,11 +5,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.dhbw.mosbach.gui.MenuSceneController">
+<Pane fx:id="menuPane" prefHeight="211.0" prefWidth="287.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.dhbw.mosbach.gui.MenuSceneController">
    <children>
-      <VBox alignment="CENTER" onDragDropped="#handleDragDroppedEvent" onDragOver="#handleDragOverEvent" prefHeight="201.0" prefWidth="281.0" spacing="10.0">
+      <VBox alignment="CENTER" onDragDropped="#handleDragDroppedEvent" onDragOver="#handleDragOverEvent" prefHeight="201.0" prefWidth="287.0" spacing="10.0">
          <children>
-            <MenuBar prefHeight="30.0" prefWidth="281.0">
+            <MenuBar prefHeight="30.0" prefWidth="412.0">
               <menus>
                 <Menu mnemonicParsing="false" text="Programm">
                   <items>
@@ -19,27 +19,35 @@
                 <Menu mnemonicParsing="false" text="Hilfe">
                      <items>
                         <MenuItem mnemonicParsing="false" onAction="#handleHelp" text="Anzeigen" />
-                     </items></Menu>
+                     </items>
+                  </Menu>
               </menus>
             </MenuBar>
             <Label text="Yajisan-Kazusan" textAlignment="CENTER">
                <font>
-                  <Font name="System Bold" size="24.0" />
+                  <Font name="System Bold" size="28.0" />
                </font>
             </Label>
             <HBox alignment="CENTER" prefHeight="44.0" prefWidth="281.0" spacing="10.0">
                <children>
-                  <Label text="Datei:" />
+                  <Label text="Datei:">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font></Label>
                   <TextField fx:id="filePathField" prefWidth="149.0" />
                   <Button mnemonicParsing="false" onAction="#handleChooseFile" text="auswählen" />
                </children>
             </HBox>
-            <Label text="&lt;&lt;oder JSON hier hinziehen&gt;&gt;" textAlignment="CENTER" />
-            <Button alignment="CENTER" mnemonicParsing="false" onAction="#handleStartMainScene" prefWidth="150.0" text="Ausgewähltes Spiel lösen" textAlignment="CENTER">
+            <Label text="&lt;&lt;oder JSON hier hinziehen&gt;&gt;" textAlignment="CENTER">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font></Label>
+            <Button alignment="CENTER" mnemonicParsing="false" onAction="#handleStartMainScene" prefHeight="25.0" prefWidth="162.0" text="Ausgewähltes Spiel lösen" textAlignment="CENTER">
                <VBox.margin>
                   <Insets top="5.0" />
-               </VBox.margin></Button>
+               </VBox.margin>
+            </Button>
          </children>
       </VBox>
    </children>
-</AnchorPane>
+</Pane>

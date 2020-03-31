@@ -1,8 +1,8 @@
-package de.dhbw.mosbach.file;
+package de.dhbw.mosbach.file.validator;
 
 import java.io.File;
 
-public class JSONFileValidator {
+public class JSONFileValidator implements FileValidator {
     private final String filePathMatchFieldFile;
     private final File matchFieldFile;
     private final ValidationResult validationResult;
@@ -12,23 +12,6 @@ public class JSONFileValidator {
         this.filePathMatchFieldFile = filePathMatchFieldFile;
         this.matchFieldFile = new File(filePathMatchFieldFile);
         this.validationResult = analyzeFile();
-    }
-
-    public enum ValidationResult {
-        FILE_PATH_EMPTY("Wähle zunächst eine Datei aus!"),
-        FILE_NOT_EXISTING("Ausgewählte Datei existiert nicht!"),
-        FILE_IS_NOT_A_JSON("Ausgewählte Datei ist keine JSON!"),
-        VALID_FILE("Datei ist valide.");
-
-        private String errorMessage;
-
-        ValidationResult(String errorMessage) {
-            this.errorMessage = errorMessage;
-        }
-
-        public String getErrorMessage() {
-            return errorMessage;
-        }
     }
 
     private ValidationResult analyzeFile() {

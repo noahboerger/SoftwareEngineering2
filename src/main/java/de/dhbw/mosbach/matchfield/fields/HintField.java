@@ -1,32 +1,24 @@
 package de.dhbw.mosbach.matchfield.fields;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import de.dhbw.mosbach.matchfield.Direction;
+
+import java.util.Objects;
+
 public class HintField extends AbstractField {
 
-    private final ArrowDirection arrowDirection;
+    private final Direction arrowDirection;
     private final int amount;
 
-    public HintField(ArrowDirection arrowDirection, int amount) {
+    @JsonCreator
+    public HintField(@JsonProperty("arrowDirection") Direction arrowDirection, @JsonProperty("amount") int amount) {
         super();
         this.arrowDirection = arrowDirection;
         this.amount = amount;
     }
 
-    public enum ArrowDirection {
-        UP('↑'), RIGHT('→'), DOWN('↓'), LEFT('←');
-
-        private final char arrowSymbol;
-
-        ArrowDirection(char arrowSymbol) {
-
-            this.arrowSymbol = arrowSymbol;
-        }
-
-        public char toCharacter() {
-            return arrowSymbol;
-        }
-    }
-
-    public ArrowDirection getArrowDirection() {
+    public Direction getArrowDirection() {
         return arrowDirection;
     }
 
@@ -44,5 +36,20 @@ public class HintField extends AbstractField {
         HintField copy = new HintField(this.arrowDirection, this.amount);
         copy.setFieldState(this.fieldState);
         return copy;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        HintField hintField = (HintField) o;
+        return amount == hintField.amount &&
+                arrowDirection == hintField.arrowDirection &&
+                fieldState == hintField.fieldState;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(arrowDirection, amount, fieldState);
     }
 }

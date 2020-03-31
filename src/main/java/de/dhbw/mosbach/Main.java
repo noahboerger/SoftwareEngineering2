@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Main extends Application {
@@ -15,8 +16,9 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Yajisan-Kazusan");
+        primaryStage.getIcons().add(new Image(getClass().getClassLoader().getResource("images/icon.png").toExternalForm()));
 
-        Parent menu = FXMLLoader.load(getClass().getClassLoader().getResource("MenuScene.fxml"));
+        Parent menu = FXMLLoader.load(getClass().getClassLoader().getResource("fxml/MenuScene.fxml"));
         Scene menuScene = new Scene(menu);
         menuScene.getStylesheets().add(getClass().getClassLoader().getResource("css/style.css").toExternalForm());
         primaryStage.setScene(menuScene);

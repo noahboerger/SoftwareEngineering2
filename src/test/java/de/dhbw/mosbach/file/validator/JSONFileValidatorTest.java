@@ -1,5 +1,6 @@
-package de.dhbw.mosbach.file;
+package de.dhbw.mosbach.file.validator;
 
+import de.dhbw.mosbach.file.validator.JSONFileValidator;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,26 +13,26 @@ public class JSONFileValidatorTest {
     @Test
     public void ValidFileTest() throws URISyntaxException {
         URL url = getClass().getClassLoader().getResource("validator/Test_Valid.json");
-        JSONFileValidator validator = new JSONFileValidator(Paths.get(url.toURI()).toString());
+        FileValidator validator = new JSONFileValidator(Paths.get(url.toURI()).toString());
         Assert.assertEquals(JSONFileValidator.ValidationResult.VALID_FILE, validator.getValidationResult());
     }
 
     @Test
     public void EmptyFilePathTest() {
-        JSONFileValidator validator = new JSONFileValidator("");
+        FileValidator validator = new JSONFileValidator("");
         Assert.assertEquals(JSONFileValidator.ValidationResult.FILE_PATH_EMPTY, validator.getValidationResult());
     }
 
     @Test
     public void FileNotExistingTest() {
-        JSONFileValidator validator = new JSONFileValidator("resouces/NotExisting.json");
+        FileValidator validator = new JSONFileValidator("resouces/NotExisting.json");
         Assert.assertEquals(JSONFileValidator.ValidationResult.FILE_NOT_EXISTING, validator.getValidationResult());
     }
 
     @Test
     public void FileIsNoJSONTest() throws URISyntaxException {
         URL url = getClass().getClassLoader().getResource("validator/Test_No_JSON.txt");
-        JSONFileValidator validator = new JSONFileValidator(Paths.get(url.toURI()).toString());
+        FileValidator validator = new JSONFileValidator(Paths.get(url.toURI()).toString());
         Assert.assertEquals(JSONFileValidator.ValidationResult.FILE_IS_NOT_A_JSON, validator.getValidationResult());
     }
 }

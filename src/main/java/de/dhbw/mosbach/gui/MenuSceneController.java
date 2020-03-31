@@ -1,7 +1,8 @@
 package de.dhbw.mosbach.gui;
 
-import de.dhbw.mosbach.file.JSONFileValidator;
-import de.dhbw.mosbach.file.JSONMatchFieldParser;
+import de.dhbw.mosbach.file.validator.JSONFileValidator;
+import de.dhbw.mosbach.file.parser.JSONMatchFieldParser;
+import de.dhbw.mosbach.file.parser.MatchFieldParser;
 import de.dhbw.mosbach.solve.YajisanKazusanSolver;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -49,9 +50,9 @@ public class MenuSceneController {
             fileNotValidAlert.showAndWait();
             return;
         }
-        final JSONMatchFieldParser parser = new JSONMatchFieldParser(filePathField.getText());
-        JSONMatchFieldParser.ParsingValidationResult result = parser.getParsingValidationResult().orElseGet(null);
-        if (result != JSONMatchFieldParser.ParsingValidationResult.PARSED_SUCCESSFUL) {
+        final MatchFieldParser parser = new JSONMatchFieldParser(filePathField.getText());
+        MatchFieldParser.ParsingValidationResult result = parser.getParsingValidationResult();
+        if (result != MatchFieldParser.ParsingValidationResult.PARSED_SUCCESSFUL) {
             Alert fileNotValidAlert = new Alert(Alert.AlertType.ERROR);
             fileNotValidAlert.setTitle("Datei ist korrupt!");
             fileNotValidAlert.setHeaderText(null);
@@ -64,11 +65,11 @@ public class MenuSceneController {
             return;
         }
         Stage activeStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("SolverScene.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/SolverScene.fxml"));
         Parent solver = loader.load();
 
         SolverSceneController solverSceneController = loader.getController();
-        solverSceneController.init(new YajisanKazusanSolver(parser.getMatchFieldOfParsedJSON().orElseGet(null)));
+        solverSceneController.init(new YajisanKazusanSolver(parser.getMatchFieldOfParsedFile().orElseGet(null)));
 
         Scene solverScene = new Scene(solver);
         solverScene.setOnKeyPressed(solverSceneController::onKeyboardPress);

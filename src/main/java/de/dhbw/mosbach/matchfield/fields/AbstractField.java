@@ -1,5 +1,7 @@
 package de.dhbw.mosbach.matchfield.fields;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public abstract class AbstractField implements Field {
 
     protected FieldState fieldState;
@@ -9,11 +11,13 @@ public abstract class AbstractField implements Field {
     }
 
     @Override
+    @JsonIgnore
     public FieldState getFieldState() {
         return fieldState;
     }
 
     @Override
+    @JsonIgnore
     public void setFieldState(FieldState fieldState) {
         this.fieldState = fieldState;
     }

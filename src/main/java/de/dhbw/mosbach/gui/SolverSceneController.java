@@ -145,7 +145,7 @@ public class SolverSceneController {
                     cell.getChildren().clear();
 
                     HintField hintField = (HintField) cellField;
-                    Label amountLabel = new Label(Integer.toString(hintField.getAmount()) + " " + Character.toString(hintField.getArrowDirection().toCharacter()));
+                    Label amountLabel = new Label(hintField.getAmount() + " " + hintField.getArrowDirection().toCharacter());
 
                     int fontSize = gameSize / (actShowingMatchField.getSize() * 3);
                     amountLabel.setFont(new Font(fontSize));
@@ -215,8 +215,8 @@ public class SolverSceneController {
     }
 
     private void doBackToMenu() throws IOException {
-        Stage activeStage = (Stage) ((Node) menuBar).getScene().getWindow();
-        Parent menu = FXMLLoader.load(getClass().getClassLoader().getResource("MenuScene.fxml"));
+        Stage activeStage = (Stage) menuBar.getScene().getWindow();
+        Parent menu = FXMLLoader.load(getClass().getClassLoader().getResource("fxml/MenuScene.fxml"));
         Scene menuScene = new Scene(menu);
         menuScene.getStylesheets().add(getClass().getClassLoader().getResource("css/style.css").toExternalForm());
         activeStage.setScene(menuScene);
