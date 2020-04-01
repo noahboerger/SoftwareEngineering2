@@ -1,8 +1,8 @@
 package de.dhbw.mosbach.gui;
 
-import de.dhbw.mosbach.file.validator.JSONFileValidator;
 import de.dhbw.mosbach.file.parser.JSONMatchFieldParser;
 import de.dhbw.mosbach.file.parser.MatchFieldParser;
+import de.dhbw.mosbach.file.validator.JSONFileValidator;
 import de.dhbw.mosbach.solve.YajisanKazusanSolver;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;

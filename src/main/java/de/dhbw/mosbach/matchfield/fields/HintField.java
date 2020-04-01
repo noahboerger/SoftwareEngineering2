@@ -2,7 +2,7 @@ package de.dhbw.mosbach.matchfield.fields;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.dhbw.mosbach.matchfield.Direction;
+import de.dhbw.mosbach.matchfield.utils.Direction;
 
 import java.util.Objects;
 

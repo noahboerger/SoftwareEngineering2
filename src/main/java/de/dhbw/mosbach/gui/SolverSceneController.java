@@ -2,13 +2,11 @@ package de.dhbw.mosbach.gui;
 
 import de.dhbw.mosbach.matchfield.MatchField;
 import de.dhbw.mosbach.matchfield.fields.Field;
-import de.dhbw.mosbach.matchfield.fields.FieldState;
 import de.dhbw.mosbach.matchfield.fields.HintField;
+import de.dhbw.mosbach.matchfield.utils.FieldIndex;
 import de.dhbw.mosbach.solve.YajisanKazusanSolver;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -41,7 +39,7 @@ public class SolverSceneController {
 
     private YajisanKazusanSolver solver;
 
-    private List<YajisanKazusanSolver.FieldIndex> solution;
+    private List<FieldIndex> solution;
 
     private MatchField actShowingMatchField;
 
@@ -150,7 +148,7 @@ public class SolverSceneController {
                     int fontSize = gameSize / (actShowingMatchField.getSize() * 3);
                     amountLabel.setFont(new Font(fontSize));
 
-                    if (hintField.getFieldState() == FieldState.BLACK) {
+                    if (hintField.getFieldState() == Field.State.BLACK) {
                         amountLabel.getStyleClass().add("whiteFont");
                     }
                     cell.getChildren().add(amountLabel);
@@ -169,7 +167,7 @@ public class SolverSceneController {
     private void doStep() {
         calculateSolutionIfNotDone();
         if (actStep < actShowingMatchField.getSize() * actShowingMatchField.getSize()) {
-            FieldState correctFieldState = solvedMatchField.getFieldAt(solution.get(actStep).getX(), solution.get(actStep).getY()).getFieldState();
+            Field.State correctFieldState = solvedMatchField.getFieldAt(solution.get(actStep).getX(), solution.get(actStep).getY()).getFieldState();
             actShowingMatchField.getFieldAt(solution.get(actStep).getX(), solution.get(actStep).getY()).setFieldState(correctFieldState);
             actStep++;
         } else {
@@ -184,7 +182,7 @@ public class SolverSceneController {
 
     private void doStepBack() {
         if (actStep > 0) {
-            actShowingMatchField.getFieldAt(solution.get(actStep - 1).getX(), solution.get(actStep - 1).getY()).setFieldState(FieldState.UNKNOWN);
+            actShowingMatchField.getFieldAt(solution.get(actStep - 1).getX(), solution.get(actStep - 1).getY()).setFieldState(Field.State.UNKNOWN);
             actStep--;
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -199,10 +197,10 @@ public class SolverSceneController {
     private void doFullSolution() {
         calculateSolutionIfNotDone();
         if (actStep < actShowingMatchField.getSize() * actShowingMatchField.getSize()) {
-            for (YajisanKazusanSolver.FieldIndex fieldIndex:solution){
-                FieldState correctFieldState = solvedMatchField.getFieldAt(fieldIndex.getX(), fieldIndex.getY()).getFieldState();
-            actShowingMatchField.getFieldAt(fieldIndex.getX(), fieldIndex.getY()).setFieldState(correctFieldState);
-        }
+            for (FieldIndex fieldIndex : solution) {
+                Field.State correctFieldState = solvedMatchField.getFieldAt(fieldIndex.getX(), fieldIndex.getY()).getFieldState();
+                actShowingMatchField.getFieldAt(fieldIndex.getX(), fieldIndex.getY()).setFieldState(correctFieldState);
+            }
             actStep = actShowingMatchField.getSize() * actShowingMatchField.getSize();
         } else {
             Alert alert = new Alert(Alert.AlertType.WARNING);

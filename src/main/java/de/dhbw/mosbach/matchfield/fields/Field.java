@@ -9,13 +9,17 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
         @JsonSubTypes.Type(value = HintField.class, name = "HINT")})
 public interface Field {
 
-    FieldState getFieldState();
+    State getFieldState();
 
-    void setFieldState(FieldState fieldState);
+    void setFieldState(State fieldState);
 
     Field deepCopy();
 
-    public static Field deepCopy(Field field) {
+    static Field deepCopy(Field field) {
         return field.deepCopy();
+    }
+
+    enum State {
+        UNKNOWN, WHITE, BLACK
     }
 }

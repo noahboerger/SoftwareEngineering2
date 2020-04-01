@@ -1,7 +1,12 @@
 package de.dhbw.mosbach.matchfield;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.dhbw.mosbach.matchfield.fields.Field;
+import de.dhbw.mosbach.matchfield.utils.Direction;
+import de.dhbw.mosbach.matchfield.utils.FieldIndex;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,30 +32,48 @@ public class MatchField {
         this.fieldList = fieldList;
     }
 
+    public Field getFieldAt(FieldIndex index) {
+        return getFieldAt(index.getX(), index.getY());
+    }
 
     public Field getFieldAt(int x, int y) {
+        if (isIndexUnreachable(x, y)) {
+            return null;
+        }
         return fieldList.get(x).get(y);
     }
 
-    public Field getNeighbourTo(int x, int y, Direction direction) {
-        try {
-            switch (direction) {
-                case UP:
-                    return fieldList.get(x).get(y - 1);
-                case RIGHT:
-                    return fieldList.get(x + 1).get(y);
-                case DOWN:
-                    return fieldList.get(x).get(y + 1);
-                case LEFT:
-                    return fieldList.get(x - 1).get(y);
-            }
-        } catch (IndexOutOfBoundsException ie) {
+    public Field getNeighbourTo(Field field, Direction direction) {
+        FieldIndex index = getIndexOfField(field);
+        if (index == null) {
             return null;
         }
-        return null;
+        int x = index.getX(), y = index.getY();
+        switch (direction) {
+            case UP:
+                y--;
+                break;
+            case RIGHT:
+                x++;
+                break;
+            case DOWN:
+                y++;
+                break;
+            case LEFT:
+                x--;
+                break;
+        }
+        if (isIndexUnreachable(x, y)) {
+            return null;
+        }
+        return fieldList.get(x).get(y);
     }
 
-    public List<Field> getFieldsToDirection(int x, int y, Direction direction) {
+    public List<Field> getFieldsToDirection(Field field, Direction direction) {
+        FieldIndex index = getIndexOfField(field);
+        if (index == null) {
+            return Collections.emptyList();
+        }
         int xChange = 0, yChange = 0;
         switch (direction) {
             case UP:
@@ -66,23 +89,23 @@ public class MatchField {
                 xChange--;
                 break;
         }
-        int actX = (x + xChange), actY = (y + yChange);
+        int actX = (index.getX() + xChange), actY = (index.getY() + yChange);
         List<Field> returnList = new ArrayList<>();
-        try {
-            while (actX >= 0 && actY >= 0 && actX < getSize() && actY < getSize()) {
-                returnList.add(fieldList.get(actX).get(actY));
-                actX += xChange;
-                actY += yChange;
-            }
-            return returnList;
-        } catch (IndexOutOfBoundsException ie) {
-            return Collections.EMPTY_LIST;
+        while (actX >= 0 && actY >= 0 && actX < getSize() && actY < getSize()) {
+            returnList.add(fieldList.get(actX).get(actY));
+            actX += xChange;
+            actY += yChange;
         }
+        return returnList;
     }
 
-    @JsonIgnore
-    public int getSize() {
-        return fieldList.size();
+    //List-Referenzen bleiben unveränderlich aber Referenzen auf Felder werden zurückgegeben
+    public List<List<Field>> getAllFields() {
+        List<List<Field>> copyList = new ArrayList<>();
+        for (List<Field> actFieldList : fieldList) {
+            copyList.add(List.copyOf(actFieldList));
+        }
+        return copyList;
     }
 
     public static MatchField deepCopy(MatchField matchField) {
@@ -97,12 +120,35 @@ public class MatchField {
         return new MatchField(copyFieldList);
     }
 
+    public FieldIndex getIndexOfField(Field field) {
+        final int size = getSize();
+        for (int x = 0; x < size; x++) {
+            for (int y = 0; y < size; y++) {
+                Field actField = fieldList.get(x).get(y);
+                if (actField == field) {
+                    return new FieldIndex(x, y);
+                }
+            }
+        }
+        return null;
+    }
+
+    private boolean isIndexUnreachable(int x, int y) {
+        final int size = getSize();
+        return x < 0 || y < 0 || x >= size || y >= size;
+    }
+
+    @JsonIgnore
+    public int getSize() {
+        return fieldList.size();
+    }
+
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder("MatchField [");
-        for (int x = 0; x < fieldList.size(); x++) {
-            for (int y = 0; y < fieldList.get(x).size(); y++) {
-                stringBuilder.append(fieldList.get(x).get(y));
+        for (List<Field> fields : fieldList) {
+            for (Field field : fields) {
+                stringBuilder.append(field);
             }
         }
         stringBuilder.append("]");

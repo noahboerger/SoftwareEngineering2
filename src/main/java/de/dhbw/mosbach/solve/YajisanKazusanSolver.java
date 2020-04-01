@@ -1,7 +1,10 @@
 package de.dhbw.mosbach.solve;
 
+import de.dhbw.mosbach.matchfield.utils.Direction;
 import de.dhbw.mosbach.matchfield.MatchField;
-import de.dhbw.mosbach.matchfield.fields.FieldState;
+import de.dhbw.mosbach.matchfield.fields.Field;
+import de.dhbw.mosbach.matchfield.fields.HintField;
+import de.dhbw.mosbach.matchfield.utils.FieldIndex;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,25 +20,7 @@ public class YajisanKazusanSolver {
 
     public YajisanKazusanSolver(MatchField unsolvedMatchField) {
         this.unsolvedMatchField = MatchField.deepCopy(unsolvedMatchField);
-        this.solvedMatchField= MatchField.deepCopy(unsolvedMatchField);
-    }
-
-    public static  class FieldIndex {
-        private final int x;
-        private final int y;
-
-        public FieldIndex(int x, int y) {
-            this.x = x;
-            this.y = y;
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public int getY() {
-            return y;
-        }
+        this.solvedMatchField = MatchField.deepCopy(unsolvedMatchField);
     }
 
     public MatchField getUnsolvedMatchField() {
@@ -43,7 +28,7 @@ public class YajisanKazusanSolver {
     }
 
     public MatchField getSolvedMatchField() {
-        if(!isSolved) {
+        if (!isSolved) {
             solve();
             isSolved = true;
         }
@@ -51,7 +36,7 @@ public class YajisanKazusanSolver {
     }
 
     public List<FieldIndex> getSolvingParsingOrder() {
-        if(!isSolved) {
+        if (!isSolved) {
             solve();
             isSolved = true;
         }
@@ -59,13 +44,42 @@ public class YajisanKazusanSolver {
     }
 
     private void solve() {
-        for(int x = 0; x < solvedMatchField.getSize(); x++) {
-            for(int y = 0; y < solvedMatchField.getSize(); y++) {
-                FieldState randomState = new Random().nextBoolean() ? FieldState.WHITE: FieldState.BLACK;
-                solvedMatchField.getFieldAt(x,y).setFieldState(randomState);
-                solvingOrderList.add(new FieldIndex(x,y));
+        for (int x = 0; x < solvedMatchField.getSize(); x++) {
+            for (int y = 0; y < solvedMatchField.getSize(); y++) {
+                Field.State randomState = new Random().nextBoolean() ? Field.State.WHITE : Field.State.BLACK;
+                solvedMatchField.getFieldAt(x, y).setFieldState(randomState);
+                solvingOrderList.add(new FieldIndex(x, y));
             }
         }
+        //TODO
         System.out.println("Solving is not supported right now!!!");
+    }
+
+    private void setImpossibleFieldsToBlack() {
+        //TODO
+        System.out.println("NOT SUPPORTED SO FAR");
+        throw new UnsupportedOperationException();
+    }
+
+    private void setNeighboursOfBlackFieldsToWhite() {
+        List<List<Field>> allFields = solvedMatchField.getAllFields();
+        for (List<Field> allField : allFields) {
+            for (Field actField : allField) {
+                if (!(actField instanceof HintField) || actField.getFieldState() != Field.State.BLACK) {
+                    continue;
+                }
+                for (Direction directions : Direction.values()) {
+                    Field actNeighbourField = solvedMatchField.getNeighbourTo(actField, directions);
+                    if (actNeighbourField != null) {
+                        setStateAndAddToSolution(actNeighbourField, Field.State.WHITE);
+                    }
+                }
+            }
+        }
+    }
+
+    private void setStateAndAddToSolution(Field field, Field.State fieldState) {
+        field.setFieldState(fieldState);
+        solvingOrderList.add(solvedMatchField.getIndexOfField(field));
     }
 }

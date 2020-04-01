@@ -1,4 +1,4 @@
-package de.dhbw.mosbach.matchfield;
+package de.dhbw.mosbach.matchfield.utils;
 
 public enum Direction {
 
