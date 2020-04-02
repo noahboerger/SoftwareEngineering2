@@ -57,17 +57,27 @@ public class YajisanKazusanSolver {
     }
 
     private void setImpossibleHintFieldsToBlack() {
-        List<List<Field>> allFields = solvedMatchField.getAllFields();
-        for (List<Field> allField : allFields) {
+        for (List<Field> allField : solvedMatchField.getAllFields()) {
             for (Field actField : allField) {
-                if (!(actField instanceof HintField)) {
+                if (actField.getFieldState() != Field.State.UNKNOWN || !(actField instanceof HintField)) {
                     continue;
                 }
                 HintField actHintField = (HintField) actField;
-                final int maxPossibleBlackFields = SolverUtils.calculateMaxPossibleBlackFieldsToDirection(solvedMatchField,actHintField, actHintField.getArrowDirection());
-                if(actHintField.getAmount() > maxPossibleBlackFields) {
+                final int maxPossibleBlackFields = SolverUtils.calculateMaxPossibleBlackFieldsToDirection(solvedMatchField, actHintField, actHintField.getArrowDirection());
+                if (actHintField.getAmount() > maxPossibleBlackFields) {
                     setStateAndAddToSolution(actHintField, Field.State.BLACK);
                 }
+            }
+        }
+    }
+
+    private void useHintsOfWhiteHintFields() {
+        for (List<Field> allField : solvedMatchField.getAllFields()) {
+            for (Field actField : allField) {
+                if (actField.getFieldState() != Field.State.WHITE || !(actField instanceof HintField)) {
+                    continue;
+                }
+                //List<Field> blackFields = SolverUtils.getBlackFieldsOfPotentialCompletedRow(); TODO
             }
         }
     }
@@ -77,7 +87,7 @@ public class YajisanKazusanSolver {
         field.setFieldState(fieldState);
         solvingOrderList.add(solvedMatchField.getIndexOfField(field));
         //Wenn State schwarz alle Nachbarn weiß setzen
-        if(fieldState == Field.State.BLACK) {
+        if (fieldState == Field.State.BLACK) {
             for (Direction directions : Direction.values()) {
                 Field actNeighbourField = solvedMatchField.getNeighbourTo(field, directions);
                 if (actNeighbourField != null && actNeighbourField.getFieldState() == Field.State.UNKNOWN) {
