@@ -6,7 +6,7 @@ import de.dhbw.mosbach.matchfield.fields.HintField;
 import de.dhbw.mosbach.matchfield.utils.Direction;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 final class SolverUtils {
@@ -61,10 +61,11 @@ final class SolverUtils {
     //Weißes Hintfield -> Hint nutzen, wenn möglich, gibt zu schwärzende Felder zurück
     public static BlackAndWhiteSolution getBlackAndWhiteUseHint(MatchField matchField, HintField hintField) {
         Field startField = matchField.getNeighbourTo(hintField, hintField.getArrowDirection());
+        int alreadyBlackInRow = getAlreadyBlackedFieldsToDirection(matchField, hintField, hintField.getArrowDirection());
 
         BlackAndWhiteSolution potentialCorrectSolution = null;
         for (BlackAndWhiteSolution actSolution : getListOfPossibleSolutions(matchField, startField, hintField.getArrowDirection())) {
-            if(actSolution.toBeBlackedFields.size() == hintField.getAmount()) {
+            if(actSolution.toBeBlackedFields.size() + alreadyBlackInRow  == hintField.getAmount()) {
                 if(potentialCorrectSolution == null) {
                     potentialCorrectSolution = actSolution;
                 } else {
@@ -75,6 +76,16 @@ final class SolverUtils {
         return potentialCorrectSolution;
     }
 
+    public static int getAlreadyBlackedFieldsToDirection(MatchField matchField, Field field, Direction direction) {
+        int count = 0;
+        for(Field actField : matchField.getFieldsToDirection(field, direction)) {
+            if(actField.getFieldState() == Field.State.BLACK) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     static List<BlackAndWhiteSolution> getListOfPossibleSolutions(MatchField matchField, Field actField, Direction direction) {
         List<Field> upcomingFields = matchField.getFieldsToDirection(actField, direction);
         List<BlackAndWhiteSolution> solutionsList = new ArrayList<>();
@@ -83,14 +94,12 @@ final class SolverUtils {
             //Farbe schon bekannt, leere Lösung zurückgeben
             if (actField.getFieldState() != Field.State.UNKNOWN) {
                 solutionsList.add(new BlackAndWhiteSolution());
-                return solutionsList;
             } else {
                 //Farbe noch nicht bekannt
                 if (isAbleToBeBlack(matchField, actField)) {
-                    solutionsList.add(new BlackAndWhiteSolution(Arrays.asList(actField), new ArrayList<>()));
+                    solutionsList.add(new BlackAndWhiteSolution(Collections.singletonList(actField), new ArrayList<>()));
                 }
-                solutionsList.add(new BlackAndWhiteSolution(new ArrayList<>(), Arrays.asList(actField)));
-                return solutionsList;
+                solutionsList.add(new BlackAndWhiteSolution(new ArrayList<>(), Collections.singletonList(actField)));
             }
         } else {
             //Mehrere Felder übrig
@@ -113,8 +122,8 @@ final class SolverUtils {
                     solutionsList.add(copySolution);
                 }
             }
-            return solutionsList;
         }
+        return solutionsList;
     }
 
     static class BlackAndWhiteSolution {
@@ -127,7 +136,7 @@ final class SolverUtils {
         }
 
         public BlackAndWhiteSolution() {
-            this(new ArrayList(), new ArrayList());
+            this(new ArrayList<>(), new ArrayList<>());
         }
 
         public static BlackAndWhiteSolution copyOf(BlackAndWhiteSolution solution) {

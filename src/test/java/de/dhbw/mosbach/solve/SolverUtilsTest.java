@@ -36,26 +36,25 @@ public class SolverUtilsTest {
         List<SolverUtils.BlackAndWhiteSolution> potentialSolutions = SolverUtils.getListOfPossibleSolutions(testMatchField, testMatchField.getFieldAt(2, 0), Direction.RIGHT);
         Assert.assertEquals(8, potentialSolutions.size());
 
-        testMatchField.getFieldAt(3,0).setFieldState(Field.State.BLACK);
+        testMatchField.getFieldAt(3, 0).setFieldState(Field.State.BLACK);
         List<SolverUtils.BlackAndWhiteSolution> potentialSolutionsWithBlackField = SolverUtils.getListOfPossibleSolutions(testMatchField, testMatchField.getFieldAt(2, 0), Direction.RIGHT);
         Assert.assertEquals(1, potentialSolutionsWithBlackField.size());
-        Assert.assertEquals(2 , potentialSolutionsWithBlackField.get(0).toBeWhitedFields.size());
-        Assert.assertEquals(0 , potentialSolutionsWithBlackField.get(0).toBeBlackedFields.size());
-        Assert.assertEquals(testMatchField.getFieldAt(2,0), potentialSolutionsWithBlackField.get(0).toBeWhitedFields.get(0));
-        Assert.assertEquals(testMatchField.getFieldAt(4,0), potentialSolutionsWithBlackField.get(0).toBeWhitedFields.get(1));
+        Assert.assertEquals(2, potentialSolutionsWithBlackField.get(0).toBeWhitedFields.size());
+        Assert.assertEquals(0, potentialSolutionsWithBlackField.get(0).toBeBlackedFields.size());
+        Assert.assertEquals(testMatchField.getFieldAt(2, 0), potentialSolutionsWithBlackField.get(0).toBeWhitedFields.get(0));
+        Assert.assertEquals(testMatchField.getFieldAt(4, 0), potentialSolutionsWithBlackField.get(0).toBeWhitedFields.get(1));
     }
 
     @Test
     public void getBlackAndWhiteUseHintTest() {
-        SolverUtils.BlackAndWhiteSolution potentialSolutions = SolverUtils.getBlackAndWhiteUseHint(testMatchField, (HintField) testMatchField.getFieldAt(1, 0));
-        Assert.assertNull( potentialSolutions);
+        SolverUtils.BlackAndWhiteSolution potentialSolutions = SolverUtils.getBlackAndWhiteUseHint(testMatchField, (HintField) testMatchField.getFieldAt(0, 0));
+        Assert.assertNull(potentialSolutions);
 
-        testMatchField.getFieldAt(3,0).setFieldState(Field.State.BLACK);
-        SolverUtils.BlackAndWhiteSolution potentialSolutionsWithBlackField = SolverUtils.getBlackAndWhiteUseHint(testMatchField,  (HintField) testMatchField.getFieldAt(1, 0));
-        Assert.assertNotNull( potentialSolutionsWithBlackField);
-        Assert.assertEquals(2 , potentialSolutionsWithBlackField.toBeWhitedFields.size());
-        Assert.assertEquals(0 , potentialSolutionsWithBlackField.toBeBlackedFields.size());
-        Assert.assertEquals(testMatchField.getFieldAt(2,0), potentialSolutionsWithBlackField.toBeWhitedFields.get(0));
-        Assert.assertEquals(testMatchField.getFieldAt(4,0), potentialSolutionsWithBlackField.toBeWhitedFields.get(1));
+        testMatchField.getFieldAt(3, 0).setFieldState(Field.State.BLACK);
+        SolverUtils.BlackAndWhiteSolution potentialSolutionsWithBlackField = SolverUtils.getBlackAndWhiteUseHint(testMatchField, (HintField) testMatchField.getFieldAt(0, 0));
+        Assert.assertNotNull(potentialSolutionsWithBlackField);
+        Assert.assertEquals(2, potentialSolutionsWithBlackField.toBeWhitedFields.size());
+        Assert.assertEquals(1, potentialSolutionsWithBlackField.toBeBlackedFields.size());
+        Assert.assertEquals(testMatchField.getFieldAt(1, 0), potentialSolutionsWithBlackField.toBeBlackedFields.get(0));
     }
 }
