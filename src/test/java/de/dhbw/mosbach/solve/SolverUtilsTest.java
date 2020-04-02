@@ -57,4 +57,15 @@ public class SolverUtilsTest {
         Assert.assertEquals(1, potentialSolutionsWithBlackField.toBeBlackedFields.size());
         Assert.assertEquals(testMatchField.getFieldAt(1, 0), potentialSolutionsWithBlackField.toBeBlackedFields.get(0));
     }
+
+    @Test
+    public void isDefinitelyUnableToBeSolvedAnyMoreTest() {
+        Assert.assertFalse(SolverUtils.isDefinitelyUnableToBeSolvedAnyMore(testMatchField));
+        testMatchField.getFieldAt(4,3).setFieldState(Field.State.BLACK);
+        testMatchField.getFieldAt(3,3).setFieldState(Field.State.BLACK);
+        testMatchField.getFieldAt(0,1).setFieldState(Field.State.WHITE);
+        Assert.assertFalse(SolverUtils.isDefinitelyUnableToBeSolvedAnyMore(testMatchField));
+        testMatchField.getFieldAt(2,4).setFieldState(Field.State.BLACK);
+        Assert.assertTrue(SolverUtils.isDefinitelyUnableToBeSolvedAnyMore(testMatchField));
+    }
 }

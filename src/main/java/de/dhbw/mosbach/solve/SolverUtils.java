@@ -4,10 +4,10 @@ import de.dhbw.mosbach.matchfield.MatchField;
 import de.dhbw.mosbach.matchfield.fields.Field;
 import de.dhbw.mosbach.matchfield.fields.HintField;
 import de.dhbw.mosbach.matchfield.utils.Direction;
+import de.dhbw.mosbach.matchfield.utils.FieldIndex;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 final class SolverUtils {
     private SolverUtils() {
@@ -58,15 +58,62 @@ final class SolverUtils {
         return potentialBlackField;
     }
 
+    static boolean isDefinitelyUnableToBeSolvedAnyMore(MatchField matchField) {
+        Field firstWhiteField = getFirstWhiteField(matchField);
+        if (firstWhiteField == null) {
+            return false;
+        }
+        FieldIndex indexOfFirstField = matchField.getIndexOfField(firstWhiteField);
+        Set<FieldIndex> foundFields = new HashSet<>();
+        List<FieldIndex> toBeProcessedFields = new ArrayList<>();
+        foundFields.add(indexOfFirstField);
+        toBeProcessedFields.add(indexOfFirstField);
+
+        while (!toBeProcessedFields.isEmpty()) {
+            Field actField = matchField.getFieldAt(toBeProcessedFields.remove(0));
+            List<FieldIndex> unprocessedFieldIndexes = matchField.getAllNeighbours(actField).stream()
+                    .filter(field ->field.getFieldState() != Field.State.BLACK)
+                    .map(field -> matchField.getIndexOfField(field))
+                    .filter(field -> !foundFields.contains(field))
+                    .collect(Collectors.toList());
+            toBeProcessedFields.addAll(unprocessedFieldIndexes);
+            foundFields.addAll(unprocessedFieldIndexes);
+        }
+        return foundFields.size() != countUnsolvedAndWhiteFields(matchField);
+    }
+
+    private static int countUnsolvedAndWhiteFields(MatchField matchField) {
+        int count = 0;
+        for (List<Field> fields : matchField.getAllFields()) {
+            for (Field actField : fields) {
+                if(actField.getFieldState() != Field.State.BLACK) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    private static Field getFirstWhiteField(MatchField matchField) {
+        for (List<Field> fields : matchField.getAllFields()) {
+            for (Field actField : fields) {
+                if (actField.getFieldState() == Field.State.WHITE) {
+                    return actField;
+                }
+            }
+        }
+        return null;
+    }
+
     //Weißes Hintfield -> Hint nutzen, wenn möglich, gibt zu schwärzende Felder zurück
-    public static BlackAndWhiteSolution getBlackAndWhiteUseHint(MatchField matchField, HintField hintField) {
+    static BlackAndWhiteSolution getBlackAndWhiteUseHint(MatchField matchField, HintField hintField) {
         Field startField = matchField.getNeighbourTo(hintField, hintField.getArrowDirection());
         int alreadyBlackInRow = getAlreadyBlackedFieldsToDirection(matchField, hintField, hintField.getArrowDirection());
 
         BlackAndWhiteSolution potentialCorrectSolution = null;
         for (BlackAndWhiteSolution actSolution : getListOfPossibleSolutions(matchField, startField, hintField.getArrowDirection())) {
-            if(actSolution.toBeBlackedFields.size() + alreadyBlackInRow  == hintField.getAmount()) {
-                if(potentialCorrectSolution == null) {
+            if (actSolution.toBeBlackedFields.size() + alreadyBlackInRow == hintField.getAmount()) {
+                if (potentialCorrectSolution == null) {
                     potentialCorrectSolution = actSolution;
                 } else {
                     return null;
@@ -74,16 +121,6 @@ final class SolverUtils {
             }
         }
         return potentialCorrectSolution;
-    }
-
-    public static int getAlreadyBlackedFieldsToDirection(MatchField matchField, Field field, Direction direction) {
-        int count = 0;
-        for(Field actField : matchField.getFieldsToDirection(field, direction)) {
-            if(actField.getFieldState() == Field.State.BLACK) {
-                count++;
-            }
-        }
-        return count;
     }
 
     static List<BlackAndWhiteSolution> getListOfPossibleSolutions(MatchField matchField, Field actField, Direction direction) {
@@ -126,20 +163,30 @@ final class SolverUtils {
         return solutionsList;
     }
 
+    static int getAlreadyBlackedFieldsToDirection(MatchField matchField, Field field, Direction direction) {
+        int count = 0;
+        for (Field actField : matchField.getFieldsToDirection(field, direction)) {
+            if (actField.getFieldState() == Field.State.BLACK) {
+                count++;
+            }
+        }
+        return count;
+    }
+
     static class BlackAndWhiteSolution {
         List<Field> toBeBlackedFields;
         List<Field> toBeWhitedFields;
 
-        public BlackAndWhiteSolution(List<Field> toBeBlackedFields, List<Field> toBeWhitedFields) {
+        private BlackAndWhiteSolution(List<Field> toBeBlackedFields, List<Field> toBeWhitedFields) {
             this.toBeBlackedFields = toBeBlackedFields;
             this.toBeWhitedFields = toBeWhitedFields;
         }
 
-        public BlackAndWhiteSolution() {
+        private BlackAndWhiteSolution() {
             this(new ArrayList<>(), new ArrayList<>());
         }
 
-        public static BlackAndWhiteSolution copyOf(BlackAndWhiteSolution solution) {
+        private static BlackAndWhiteSolution copyOf(BlackAndWhiteSolution solution) {
             return new BlackAndWhiteSolution(new ArrayList<>(solution.toBeBlackedFields), new ArrayList<>(solution.toBeWhitedFields));
         }
     }

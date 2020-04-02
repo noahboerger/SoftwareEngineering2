@@ -8,10 +8,8 @@ import de.dhbw.mosbach.matchfield.fields.Field;
 import de.dhbw.mosbach.matchfield.utils.Direction;
 import de.dhbw.mosbach.matchfield.utils.FieldIndex;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class MatchField {
@@ -131,6 +129,10 @@ public class MatchField {
             }
         }
         return null;
+    }
+
+    public List<Field> getAllNeighbours(Field field) {
+        return Arrays.stream(Direction.values()).map(direction -> getNeighbourTo(field, direction)).filter( x -> x!= null).collect(Collectors.toList());
     }
 
     private boolean isIndexUnreachable(int x, int y) {
