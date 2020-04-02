@@ -1,4 +1,4 @@
-package de.dhbw.mosbach.file.validator;
+package de.dhbw.mosbach.file.parser;
 
 import de.dhbw.mosbach.file.parser.JSONMatchFieldParser;
 import de.dhbw.mosbach.file.parser.MatchFieldParser;

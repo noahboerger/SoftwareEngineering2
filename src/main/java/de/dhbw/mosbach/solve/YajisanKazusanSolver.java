@@ -44,42 +44,47 @@ public class YajisanKazusanSolver {
     }
 
     private void solve() {
-        for (int x = 0; x < solvedMatchField.getSize(); x++) {
+        /*for (int x = 0; x < solvedMatchField.getSize(); x++) {
             for (int y = 0; y < solvedMatchField.getSize(); y++) {
                 Field.State randomState = new Random().nextBoolean() ? Field.State.WHITE : Field.State.BLACK;
                 solvedMatchField.getFieldAt(x, y).setFieldState(randomState);
                 solvingOrderList.add(new FieldIndex(x, y));
             }
-        }
+        }*/
+        setImpossibleHintFieldsToBlack();
         //TODO
         System.out.println("Solving is not supported right now!!!");
     }
 
-    private void setImpossibleFieldsToBlack() {
-        //TODO
-        System.out.println("NOT SUPPORTED SO FAR");
-        throw new UnsupportedOperationException();
-    }
-
-    private void setNeighboursOfBlackFieldsToWhite() {
+    private void setImpossibleHintFieldsToBlack() {
         List<List<Field>> allFields = solvedMatchField.getAllFields();
         for (List<Field> allField : allFields) {
             for (Field actField : allField) {
-                if (!(actField instanceof HintField) || actField.getFieldState() != Field.State.BLACK) {
+                if (!(actField instanceof HintField)) {
                     continue;
                 }
-                for (Direction directions : Direction.values()) {
-                    Field actNeighbourField = solvedMatchField.getNeighbourTo(actField, directions);
-                    if (actNeighbourField != null) {
-                        setStateAndAddToSolution(actNeighbourField, Field.State.WHITE);
-                    }
+                HintField actHintField = (HintField) actField;
+                final int maxPossibleBlackFields = SolverUtils.calculateMaxPossibleBlackFieldsToDirection(solvedMatchField,actHintField, actHintField.getArrowDirection());
+                if(actHintField.getAmount() > maxPossibleBlackFields) {
+                    setStateAndAddToSolution(actHintField, Field.State.BLACK);
                 }
             }
         }
     }
 
     private void setStateAndAddToSolution(Field field, Field.State fieldState) {
+        //State setzen
         field.setFieldState(fieldState);
         solvingOrderList.add(solvedMatchField.getIndexOfField(field));
+        //Wenn State schwarz alle Nachbarn weiß setzen
+        if(fieldState == Field.State.BLACK) {
+            for (Direction directions : Direction.values()) {
+                Field actNeighbourField = solvedMatchField.getNeighbourTo(field, directions);
+                if (actNeighbourField != null && actNeighbourField.getFieldState() == Field.State.UNKNOWN) {
+                    actNeighbourField.setFieldState(Field.State.WHITE);
+                    solvingOrderList.add(solvedMatchField.getIndexOfField(actNeighbourField));
+                }
+            }
+        }
     }
 }
