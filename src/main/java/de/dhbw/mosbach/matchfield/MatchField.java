@@ -89,7 +89,7 @@ public class MatchField {
         }
         int actX = (index.getX() + xChange), actY = (index.getY() + yChange);
         List<Field> returnList = new ArrayList<>();
-        while (actX >= 0 && actY >= 0 && actX < getSize() && actY < getSize()) {
+        while (actX >= 0 && actY >= 0 && actX < getEdgeSize() && actY < getEdgeSize()) {
             returnList.add(fieldList.get(actX).get(actY));
             actX += xChange;
             actY += yChange;
@@ -119,7 +119,7 @@ public class MatchField {
     }
 
     public FieldIndex getIndexOfField(Field field) {
-        final int size = getSize();
+        final int size = getEdgeSize();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
                 Field actField = fieldList.get(x).get(y);
@@ -134,36 +134,31 @@ public class MatchField {
     public List<Field> getAllNeighbours(Field field) {
         return Arrays.stream(Direction.values())
                 .map(direction -> getNeighbourTo(field, direction))
-                .filter(x -> x != null)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
     public int getNumberOfFieldsWithState(Field.State state) {
         return (int) fieldList.stream()
-                .flatMap(column -> column.stream())
+                .flatMap(Collection::stream)
                 .filter(field -> field.getFieldState() == state)
                 .count();
     }
 
     public int getNumberOfFieldsNotWithState(Field.State notState) {
         return (int) fieldList.stream()
-                .flatMap(column -> column.stream())
+                .flatMap(Collection::stream)
                 .filter(field -> field.getFieldState() != notState)
                 .count();
     }
 
     private boolean isIndexUnreachable(int x, int y) {
-        final int size = getSize();
+        final int size = getEdgeSize();
         return x < 0 || y < 0 || x >= size || y >= size;
     }
 
     @JsonIgnore
-    public int getNumberOfFields() {
-        return getSize() * getSize();
-    }
-
-    @JsonIgnore
-    public int getSize() {
+    public int getEdgeSize() {
         return fieldList.size();
     }
 

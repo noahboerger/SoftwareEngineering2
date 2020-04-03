@@ -17,21 +17,22 @@ final class SolverUtils {
 
     //Statische DTO-Klasse zum zurückgeben einer Liste an zu schwärzenden und weißen Feldern
     static class BlackAndWhiteSolutionDTO {
-        //TODO: Use Stacks
-        List<Field> toBeBlackedFields;
-        List<Field> toBeWhitedFields;
+        Stack<Field> toBeBlackedFields;
+        Stack<Field> toBeWhitedFields;
 
-        private BlackAndWhiteSolutionDTO(List<Field> toBeBlackedFields, List<Field> toBeWhitedFields) {
+        private BlackAndWhiteSolutionDTO(Stack<Field> toBeBlackedFields, Stack<Field> toBeWhitedFields) {
             this.toBeBlackedFields = toBeBlackedFields;
             this.toBeWhitedFields = toBeWhitedFields;
         }
 
         private BlackAndWhiteSolutionDTO() {
-            this(new ArrayList<>(), new ArrayList<>());
+            this(new Stack<>(), new Stack<>());
         }
 
         private static BlackAndWhiteSolutionDTO copyOf(BlackAndWhiteSolutionDTO solution) {
-            return new BlackAndWhiteSolutionDTO(new ArrayList<>(solution.toBeBlackedFields), new ArrayList<>(solution.toBeWhitedFields));
+            @SuppressWarnings("unchecked") //Typ-Sicher, da der Typ des geclonten Stacks dem des vorherigen entspricht
+                    BlackAndWhiteSolutionDTO copy = new BlackAndWhiteSolutionDTO((Stack<Field>) solution.toBeBlackedFields.clone(), (Stack<Field>) solution.toBeWhitedFields.clone());
+            return copy;
         }
     }
 
@@ -101,7 +102,6 @@ final class SolverUtils {
         return potentialBlackField;
     }
 
-    //TODO: eventuell die methoden drinnen für bessere Performanz verbinden
     //Gibt zurück ob ein Feld nicht mehr lösbar ist (z.B. aufgrund falsch geratener Felder)
     static boolean isDefinitelyUnableToBeSolvedAnyMore(MatchField matchField) {
         return !(canOrAreWhiteFieldsStillBeConnected(matchField) &&
@@ -207,9 +207,13 @@ final class SolverUtils {
             } else {
                 //Farbe noch nicht bekannt
                 if (isAbleToBeBlack(matchField, actField)) {
-                    solutionsList.add(new BlackAndWhiteSolutionDTO(Collections.singletonList(actField), new ArrayList<>()));
+                    Stack<Field> blackStack = new Stack<>();
+                    blackStack.add(actField);
+                    solutionsList.add(new BlackAndWhiteSolutionDTO(blackStack, new Stack<>()));
                 }
-                solutionsList.add(new BlackAndWhiteSolutionDTO(new ArrayList<>(), Collections.singletonList(actField)));
+                Stack<Field> whiteStack = new Stack<>();
+                whiteStack.add(actField);
+                solutionsList.add(new BlackAndWhiteSolutionDTO(new Stack<>(), whiteStack));
             }
         } else {
             //Mehrere Felder übrig
@@ -222,13 +226,13 @@ final class SolverUtils {
                 if (isAbleToBeBlack(matchField, actField)) {
                     for (BlackAndWhiteSolutionDTO subSolutions : subProblemSolutionsList) {
                         BlackAndWhiteSolutionDTO copySolution = BlackAndWhiteSolutionDTO.copyOf(subSolutions);
-                        copySolution.toBeBlackedFields.add(0, actField);
+                        copySolution.toBeBlackedFields.push(actField);
                         solutionsList.add(copySolution);
                     }
                 }
                 for (BlackAndWhiteSolutionDTO subSolutions : subProblemSolutionsList) {
                     BlackAndWhiteSolutionDTO copySolution = BlackAndWhiteSolutionDTO.copyOf(subSolutions);
-                    copySolution.toBeWhitedFields.add(0, actField);
+                    copySolution.toBeWhitedFields.push(actField);
                     solutionsList.add(copySolution);
                 }
             }
@@ -242,11 +246,7 @@ final class SolverUtils {
                 .filter(x -> x.getFieldState() == Field.State.BLACK).count();
     }
 
-    /*
-    METHODEN ZUM MÖGLICHST RICHTIGEN ERRATEN EINES FELDES:
-    */
-
-    //TODO: kann verbessert werden, indem auch reihen statt nur hinweißfedlder Überprüft werden
+    //Methode zum möglichst richtigen Erratens eines schwarzen Feldes
     static Field findPotentialBestBlackGuessHintField(MatchField matchField) {
         List<HintField> unknownHintFields = matchField.getAllFields().stream()
                 .flatMap(Collection::stream)
@@ -256,7 +256,7 @@ final class SolverUtils {
                 .collect(Collectors.toList());
 
         Map<HintField, Integer> possibleHintSolutions = new HashMap<>();
-        for(HintField actHintField : unknownHintFields) {
+        for (HintField actHintField : unknownHintFields) {
             Field startNeighbourField = matchField.getNeighbourTo(actHintField, actHintField.getArrowDirection());
             List<BlackAndWhiteSolutionDTO> allSolutions = getListOfPossibleSolutions(matchField, startNeighbourField, actHintField.getArrowDirection());
             final int alreadyBlackInRow = countFieldsToDirectionWithStateBlack(matchField, actHintField, actHintField.getArrowDirection());

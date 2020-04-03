@@ -23,11 +23,11 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class SolverSceneController {
 
     private final int gameSize = 500;
-    private final int frameSize = 5;
 
     @FXML
     private MenuBar menuBar;
@@ -109,13 +109,14 @@ public class SolverSceneController {
     }
 
     private void initView() {
+        int frameSize = 5;
         boardPane.setPrefSize(gameSize + 2 * frameSize, gameSize + 2 * frameSize);
         boardPane.setStyle("-fx-border-width: " + frameSize);
 
         fieldsMap = new HashMap<>();
-        for (int x = 0; x < actShowingMatchField.getSize(); x++) {
+        for (int x = 0; x < actShowingMatchField.getEdgeSize(); x++) {
             fieldsMap.put(x, new HashMap<>());
-            for (int y = 0; y < actShowingMatchField.getSize(); y++) {
+            for (int y = 0; y < actShowingMatchField.getEdgeSize(); y++) {
                 StackPane cell = new StackPane();
                 cell.setPrefSize(getFieldPaneSize(), getFieldPaneSize());
                 cell.setLayoutX(frameSize + x * getFieldPaneSize());
@@ -145,7 +146,7 @@ public class SolverSceneController {
                     HintField hintField = (HintField) cellField;
                     Label amountLabel = new Label(hintField.getAmount() + " " + hintField.getArrowDirection().toCharacter());
 
-                    int fontSize = gameSize / (actShowingMatchField.getSize() * 3);
+                    int fontSize = gameSize / (actShowingMatchField.getEdgeSize() * 3);
                     amountLabel.setFont(new Font(fontSize));
 
                     if (hintField.getFieldState() == Field.State.BLACK) {
@@ -171,7 +172,7 @@ public class SolverSceneController {
             showWarningDialog("Das geladenen Spielfeld hat keine Lösung!");
             return;
         }
-        if (actStep < actShowingMatchField.getSize() * actShowingMatchField.getSize()) {
+        if (actStep < actShowingMatchField.getEdgeSize() * actShowingMatchField.getEdgeSize()) {
             Field.State correctFieldState = solvedMatchField.getFieldAt(solution.get(actStep).getX(), solution.get(actStep).getY()).getFieldState();
             actShowingMatchField.getFieldAt(solution.get(actStep).getX(), solution.get(actStep).getY()).setFieldState(correctFieldState);
             actStep++;
@@ -198,12 +199,12 @@ public class SolverSceneController {
             showWarningDialog("Das geladenen Spielfeld hat keine Lösung!");
             return;
         }
-        if (actStep < actShowingMatchField.getSize() * actShowingMatchField.getSize()) {
+        if (actStep < actShowingMatchField.getEdgeSize() * actShowingMatchField.getEdgeSize()) {
             for (FieldIndex fieldIndex : solution) {
                 Field.State correctFieldState = solvedMatchField.getFieldAt(fieldIndex.getX(), fieldIndex.getY()).getFieldState();
                 actShowingMatchField.getFieldAt(fieldIndex.getX(), fieldIndex.getY()).setFieldState(correctFieldState);
             }
-            actStep = actShowingMatchField.getSize() * actShowingMatchField.getSize();
+            actStep = actShowingMatchField.getEdgeSize() * actShowingMatchField.getEdgeSize();
         } else {
             showWarningDialog("Das Spielfeld ist bereits gelöst!");
         }
@@ -212,9 +213,9 @@ public class SolverSceneController {
 
     private void doBackToMenu() throws IOException {
         Stage activeStage = (Stage) menuBar.getScene().getWindow();
-        Parent menu = FXMLLoader.load(getClass().getClassLoader().getResource("fxml/MenuScene.fxml"));
+        Parent menu = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("fxml/MenuScene.fxml")));
         Scene menuScene = new Scene(menu);
-        menuScene.getStylesheets().add(getClass().getClassLoader().getResource("css/style.css").toExternalForm());
+        menuScene.getStylesheets().add(Objects.requireNonNull(getClass().getClassLoader().getResource("css/style.css")).toExternalForm());
         activeStage.setScene(menuScene);
     }
 
@@ -227,6 +228,6 @@ public class SolverSceneController {
     }
 
     private int getFieldPaneSize() {
-        return gameSize / actShowingMatchField.getSize();
+        return gameSize / actShowingMatchField.getEdgeSize();
     }
 }

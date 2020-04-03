@@ -1,7 +1,5 @@
 package de.dhbw.mosbach.file.parser;
 
-import de.dhbw.mosbach.file.parser.JSONMatchFieldParser;
-import de.dhbw.mosbach.file.parser.MatchFieldParser;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -16,7 +14,7 @@ public class JSONMatchFieldParserTest {
         URL url = getClass().getClassLoader().getResource("parser/Test_Valid.json");
         MatchFieldParser parser = new JSONMatchFieldParser(Paths.get(url.toURI()).toString());
         Assert.assertEquals(JSONMatchFieldParser.ParsingValidationResult.PARSED_SUCCESSFUL, parser.getParsingValidationResult());
-        Assert.assertEquals(5, parser.getMatchFieldOfParsedFile().get().getSize());
+        Assert.assertEquals(5, parser.getMatchFieldOfParsedFile().get().getEdgeSize());
     }
 
     @Test

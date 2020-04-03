@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 public class MenuSceneController {
 
@@ -69,11 +70,11 @@ public class MenuSceneController {
         Parent solver = loader.load();
 
         SolverSceneController solverSceneController = loader.getController();
-        solverSceneController.init(new YajisanKazusanSolver(parser.getMatchFieldOfParsedFile().orElseGet(null)));
+        solverSceneController.init(new YajisanKazusanSolver(parser.getMatchFieldOfParsedFile().orElseThrow(() -> new IllegalStateException("MatchField can not be null here!"))));
 
         Scene solverScene = new Scene(solver);
         solverScene.setOnKeyPressed(solverSceneController::onKeyboardPress);
-        solverScene.getStylesheets().add(getClass().getClassLoader().getResource("css/style.css").toExternalForm());
+        solverScene.getStylesheets().add(Objects.requireNonNull(getClass().getClassLoader().getResource("css/style.css")).toExternalForm());
 
         activeStage.setScene(solverScene);
     }

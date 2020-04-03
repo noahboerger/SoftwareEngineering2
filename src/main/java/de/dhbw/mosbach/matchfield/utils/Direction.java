@@ -13,21 +13,6 @@ public enum Direction {
     public char toCharacter() {
         return arrowSymbol;
     }
-
-    public Direction getOppositeDirection() {
-        switch (this) {
-            case UP:
-                return DOWN;
-            case RIGHT:
-                return LEFT;
-            case DOWN:
-                return UP;
-            case LEFT:
-                return RIGHT;
-            default:
-                return null;
-        }
-    }
 }
 
 

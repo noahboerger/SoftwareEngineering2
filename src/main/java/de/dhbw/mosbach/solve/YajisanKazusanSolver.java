@@ -9,18 +9,17 @@ import de.dhbw.mosbach.matchfield.utils.FieldIndex;
 import java.util.*;
 import java.util.stream.Collectors;
 
-//TODO: helpful: https://www.janko.at/Raetsel/Yajisan-Kazusan/Beispiel.htm
 public class YajisanKazusanSolver {
 
     private final MatchField unsolvedMatchField;
 
     private final MatchField solvedMatchField;
-    boolean isSolved = false;
+    private boolean isSolved = false;
 
     private Set<FieldIndex> alreadySolvedFieldIndexes = new HashSet<>();
     private List<FieldIndex> solvingOrderList = new ArrayList<>();
-    //TODO: Use Stack
-    List<FieldIndex> backtrackingList = new ArrayList<>();
+
+    Stack<FieldIndex> backtrackingStack = new Stack<>();
 
     public YajisanKazusanSolver(MatchField unsolvedMatchField) {
         this.unsolvedMatchField = MatchField.deepCopy(unsolvedMatchField);
@@ -48,8 +47,6 @@ public class YajisanKazusanSolver {
     }
 
     private void solve() {
-        System.out.println("Solving is not supported right now!!!");
-        //TODO
         while (!SolverUtils.isSolvedCorrectly(solvedMatchField)) {
             while (!SolverUtils.isDefinitelyUnableToBeSolvedAnyMore(solvedMatchField) && !SolverUtils.isSolvedCorrectly(solvedMatchField)) {
                 int blackAndWhitesBefore;
@@ -101,36 +98,33 @@ public class YajisanKazusanSolver {
 
     private void doEducatedGuess() {
         Field guessBlackField = SolverUtils.findPotentialBestBlackGuessHintField(solvedMatchField);
-        //TODO: kann verbessert werden, indem auch reihen statt nur hinweißfedlder Überprüft werden
         if (guessBlackField == null) {
             guessBlackField = SolverUtils.findFirstFieldWithState(solvedMatchField, Field.State.UNKNOWN);
         }
         if (guessBlackField == null) {
             return;
         }
-        backtrackingList.add(0, solvedMatchField.getIndexOfField(guessBlackField));
+        backtrackingStack.push(solvedMatchField.getIndexOfField(guessBlackField));
         setStateAndAddToSolution(guessBlackField, Field.State.BLACK);
     }
 
     private void doBacktracking() {
-        if(SolverUtils.isSolvedCorrectly(solvedMatchField)) {
+        if (SolverUtils.isSolvedCorrectly(solvedMatchField)) {
             return;
         }
-        if (backtrackingList.isEmpty()) {
+        if (backtrackingStack.empty()) {
             throw new IllegalStateException();
         }
-        FieldIndex lastGuess = backtrackingList.remove(0);
+        FieldIndex lastGuess = backtrackingStack.pop();
         List<FieldIndex> toBeUnsetFieldIndexes = solvingOrderList.stream()
                 .dropWhile(index -> !index.equals(lastGuess)).collect(Collectors.toList());
 
-        //Aus bisherigem Lösungsweg entfernen
         for (FieldIndex toBeUnsetFieldIndex : toBeUnsetFieldIndexes) {
             solvedMatchField.getFieldAt(toBeUnsetFieldIndex).setFieldState(Field.State.UNKNOWN);
             solvingOrderList.remove(toBeUnsetFieldIndex);
             alreadySolvedFieldIndexes.remove(toBeUnsetFieldIndex);
         }
 
-        //Tue das Gegenteil vom letzten Raten
         setStateAndAddToSolution(solvedMatchField.getFieldAt(lastGuess), Field.State.WHITE);
     }
 

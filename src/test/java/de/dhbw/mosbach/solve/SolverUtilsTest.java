@@ -41,8 +41,8 @@ public class SolverUtilsTest {
         Assert.assertEquals(1, potentialSolutionsWithBlackField.size());
         Assert.assertEquals(2, potentialSolutionsWithBlackField.get(0).toBeWhitedFields.size());
         Assert.assertEquals(0, potentialSolutionsWithBlackField.get(0).toBeBlackedFields.size());
-        Assert.assertEquals(testMatchField.getFieldAt(2, 0), potentialSolutionsWithBlackField.get(0).toBeWhitedFields.get(0));
-        Assert.assertEquals(testMatchField.getFieldAt(4, 0), potentialSolutionsWithBlackField.get(0).toBeWhitedFields.get(1));
+        Assert.assertEquals(testMatchField.getFieldAt(2, 0), potentialSolutionsWithBlackField.get(0).toBeWhitedFields.pop());
+        Assert.assertEquals(testMatchField.getFieldAt(4, 0), potentialSolutionsWithBlackField.get(0).toBeWhitedFields.pop());
     }
 
     @Test
