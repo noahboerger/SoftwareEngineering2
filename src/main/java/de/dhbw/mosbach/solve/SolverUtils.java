@@ -180,7 +180,7 @@ final class SolverUtils {
     //Weißes Hintfield -> Hint nutzen, wenn möglich, gibt zu schwärzende und weiße Felder zurück
     static BlackAndWhiteSolutionDTO getBlackAndWhiteUseHint(MatchField matchField, HintField hintField) {
         Field startField = matchField.getNeighbourTo(hintField, hintField.getArrowDirection());
-        final int alreadyBlackInRow = getAlreadyBlackedFieldsToDirection(matchField, hintField, hintField.getArrowDirection());
+        final int alreadyBlackInRow = countFieldsToDirectionWithStateBlack(matchField, hintField, hintField.getArrowDirection());
 
         BlackAndWhiteSolutionDTO potentialCorrectSolution = null;
         for (BlackAndWhiteSolutionDTO actSolution : getListOfPossibleSolutions(matchField, startField, hintField.getArrowDirection())) {
@@ -236,15 +236,10 @@ final class SolverUtils {
         return solutionsList;
     }
 
-    //TODO: with STREAMS
-    static int getAlreadyBlackedFieldsToDirection(MatchField matchField, Field field, Direction direction) {
-        int count = 0;
-        for (Field actField : matchField.getFieldsToDirection(field, direction)) {
-            if (actField.getFieldState() == Field.State.BLACK) {
-                count++;
-            }
-        }
-        return count;
+    //Zählt Felder mit angegebenem Status ab dem angegebenen Feld (exklusiv) in die angegebene Richtung
+    static int countFieldsToDirectionWithStateBlack(MatchField matchField, Field field, Direction direction) {
+        return (int) matchField.getFieldsToDirection(field, direction).stream()
+                .filter(x -> x.getFieldState() == Field.State.BLACK).count();
     }
 
     /*
@@ -254,7 +249,7 @@ final class SolverUtils {
     //TODO: kann verbessert werden, indem auch reihen statt nur hinweißfedlder Überprüft werden
     static Field findPotentialBestBlackGuessHintField(MatchField matchField) {
         List<HintField> unknownHintFields = matchField.getAllFields().stream()
-                .flatMap(column -> column.stream())
+                .flatMap(Collection::stream)
                 .filter(field -> field.getFieldState() == Field.State.UNKNOWN)
                 .filter(field -> field instanceof HintField)
                 .map(field -> (HintField) field)
@@ -264,7 +259,7 @@ final class SolverUtils {
         for(HintField actHintField : unknownHintFields) {
             Field startNeighbourField = matchField.getNeighbourTo(actHintField, actHintField.getArrowDirection());
             List<BlackAndWhiteSolutionDTO> allSolutions = getListOfPossibleSolutions(matchField, startNeighbourField, actHintField.getArrowDirection());
-            final int alreadyBlackInRow = getAlreadyBlackedFieldsToDirection(matchField, actHintField, actHintField.getArrowDirection());
+            final int alreadyBlackInRow = countFieldsToDirectionWithStateBlack(matchField, actHintField, actHintField.getArrowDirection());
 
             final int correctSolutions = (int) allSolutions.stream()
                     .filter(solution -> solution.toBeBlackedFields.size() + alreadyBlackInRow == actHintField.getAmount()).count();
@@ -272,7 +267,6 @@ final class SolverUtils {
             possibleHintSolutions.put(actHintField, correctSolutions);
         }
         return possibleHintSolutions.keySet().stream()
-                .sorted(Comparator.comparingInt(key -> possibleHintSolutions.get(key)))
-                .findFirst().orElse(null);
+                .min(Comparator.comparingInt(possibleHintSolutions::get)).orElse(null);
     }
 }
