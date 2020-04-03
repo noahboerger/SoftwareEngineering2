@@ -1,5 +1,6 @@
 package de.dhbw.mosbach;
 
+import de.dhbw.mosbach.matchfield.MatchField;
 import de.dhbw.mosbach.matchfield.fields.Field;
 import de.dhbw.mosbach.matchfield.fields.HintField;
 import de.dhbw.mosbach.matchfield.fields.StandardField;
@@ -59,5 +60,46 @@ final public class TestUtils {
         fieldList.add(column4);
 
         return fieldList;
+    }
+
+    public static MatchField getUnsolvedTestMatchField() {
+        return new MatchField(getTestFieldList());
+    }
+
+
+    public static MatchField getSolvedTestMatchField() {
+        List<List<Field>> solutionList = getTestFieldList();
+
+        solutionList.get(0).get(0).setFieldState(Field.State.WHITE);
+        solutionList.get(0).get(1).setFieldState(Field.State.WHITE);
+        solutionList.get(0).get(2).setFieldState(Field.State.BLACK);
+        solutionList.get(0).get(3).setFieldState(Field.State.WHITE);
+        solutionList.get(0).get(4).setFieldState(Field.State.BLACK);
+
+        solutionList.get(1).get(0).setFieldState(Field.State.BLACK);
+        solutionList.get(1).get(1).setFieldState(Field.State.WHITE);
+        solutionList.get(1).get(2).setFieldState(Field.State.WHITE);
+        solutionList.get(1).get(3).setFieldState(Field.State.WHITE);
+        solutionList.get(1).get(4).setFieldState(Field.State.WHITE);
+
+        solutionList.get(2).get(0).setFieldState(Field.State.WHITE);
+        solutionList.get(2).get(1).setFieldState(Field.State.WHITE);
+        solutionList.get(2).get(2).setFieldState(Field.State.WHITE);
+        solutionList.get(2).get(3).setFieldState(Field.State.BLACK);
+        solutionList.get(2).get(4).setFieldState(Field.State.WHITE);
+
+        solutionList.get(3).get(0).setFieldState(Field.State.BLACK);
+        solutionList.get(3).get(1).setFieldState(Field.State.WHITE);
+        solutionList.get(3).get(2).setFieldState(Field.State.BLACK);
+        solutionList.get(3).get(3).setFieldState(Field.State.WHITE);
+        solutionList.get(3).get(4).setFieldState(Field.State.WHITE);
+
+        solutionList.get(4).get(0).setFieldState(Field.State.WHITE);
+        solutionList.get(4).get(1).setFieldState(Field.State.WHITE);
+        solutionList.get(4).get(2).setFieldState(Field.State.WHITE);
+        solutionList.get(4).get(3).setFieldState(Field.State.WHITE);
+        solutionList.get(4).get(4).setFieldState(Field.State.BLACK);
+
+        return new MatchField(solutionList);
     }
 }

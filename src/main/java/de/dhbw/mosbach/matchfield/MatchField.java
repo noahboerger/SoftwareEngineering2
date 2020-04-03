@@ -132,12 +132,34 @@ public class MatchField {
     }
 
     public List<Field> getAllNeighbours(Field field) {
-        return Arrays.stream(Direction.values()).map(direction -> getNeighbourTo(field, direction)).filter( x -> x!= null).collect(Collectors.toList());
+        return Arrays.stream(Direction.values())
+                .map(direction -> getNeighbourTo(field, direction))
+                .filter(x -> x != null)
+                .collect(Collectors.toList());
+    }
+
+    public int getNumberOfFieldsWithState(Field.State state) {
+        return (int) fieldList.stream()
+                .flatMap(column -> column.stream())
+                .filter(field -> field.getFieldState() == state)
+                .count();
+    }
+
+    public int getNumberOfFieldsNotWithState(Field.State notState) {
+        return (int) fieldList.stream()
+                .flatMap(column -> column.stream())
+                .filter(field -> field.getFieldState() != notState)
+                .count();
     }
 
     private boolean isIndexUnreachable(int x, int y) {
         final int size = getSize();
         return x < 0 || y < 0 || x >= size || y >= size;
+    }
+
+    @JsonIgnore
+    public int getNumberOfFields() {
+        return getSize() * getSize();
     }
 
     @JsonIgnore

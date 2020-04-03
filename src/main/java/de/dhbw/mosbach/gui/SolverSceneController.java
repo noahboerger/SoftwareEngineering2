@@ -165,17 +165,18 @@ public class SolverSceneController {
     }
 
     private void doStep() {
-        calculateSolutionIfNotDone();
+        try {
+            calculateSolutionIfNotDone();
+        } catch (IllegalStateException ise) {
+            showWarningDialog("Das geladenen Spielfeld hat keine Lösung!");
+            return;
+        }
         if (actStep < actShowingMatchField.getSize() * actShowingMatchField.getSize()) {
             Field.State correctFieldState = solvedMatchField.getFieldAt(solution.get(actStep).getX(), solution.get(actStep).getY()).getFieldState();
             actShowingMatchField.getFieldAt(solution.get(actStep).getX(), solution.get(actStep).getY()).setFieldState(correctFieldState);
             actStep++;
         } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warnung!");
-            alert.setHeaderText(null);
-            alert.setContentText("Das Spielfeld ist bereits gelöst!");
-            alert.showAndWait();
+            showWarningDialog("Das Spielfeld ist bereits gelöst!");
         }
         updateView();
     }
@@ -185,17 +186,18 @@ public class SolverSceneController {
             actShowingMatchField.getFieldAt(solution.get(actStep - 1).getX(), solution.get(actStep - 1).getY()).setFieldState(Field.State.UNKNOWN);
             actStep--;
         } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warnung!");
-            alert.setHeaderText(null);
-            alert.setContentText("Es wurde noch kein Feld offengelegt!");
-            alert.showAndWait();
+            showWarningDialog("Es wurde noch kein Feld offengelegt!");
         }
         updateView();
     }
 
     private void doFullSolution() {
-        calculateSolutionIfNotDone();
+        try {
+            calculateSolutionIfNotDone();
+        } catch (IllegalStateException ise) {
+            showWarningDialog("Das geladenen Spielfeld hat keine Lösung!");
+            return;
+        }
         if (actStep < actShowingMatchField.getSize() * actShowingMatchField.getSize()) {
             for (FieldIndex fieldIndex : solution) {
                 Field.State correctFieldState = solvedMatchField.getFieldAt(fieldIndex.getX(), fieldIndex.getY()).getFieldState();
@@ -203,11 +205,7 @@ public class SolverSceneController {
             }
             actStep = actShowingMatchField.getSize() * actShowingMatchField.getSize();
         } else {
-            Alert alert = new Alert(Alert.AlertType.WARNING);
-            alert.setTitle("Warnung!");
-            alert.setHeaderText(null);
-            alert.setContentText("Das Spielfeld ist bereits gelöst!");
-            alert.showAndWait();
+            showWarningDialog("Das Spielfeld ist bereits gelöst!");
         }
         updateView();
     }
@@ -218,6 +216,14 @@ public class SolverSceneController {
         Scene menuScene = new Scene(menu);
         menuScene.getStylesheets().add(getClass().getClassLoader().getResource("css/style.css").toExternalForm());
         activeStage.setScene(menuScene);
+    }
+
+    private void showWarningDialog(String message) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Warnung!");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private int getFieldPaneSize() {
