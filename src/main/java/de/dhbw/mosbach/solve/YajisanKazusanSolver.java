@@ -48,19 +48,41 @@ public class YajisanKazusanSolver {
     }
 
     private void solve() {
+        final long start = System.currentTimeMillis();
+        long count_setImpossibleHintFieldsToBlack = 0L;
+        long count_useHintsOfWhiteHintFields = 0L;
+        long count_processPotentialWhiteFieldsForConnectedShape = 0L;
+        long count_doEducatedGuess = 0L;
+        long count_doBacktracking = 0L;
         while (!SolverUtils.isSolvedCorrectly(solvedMatchField)) {
             while (!SolverUtils.isDefinitelyUnableToBeSolvedAnyMore(solvedMatchField) && !SolverUtils.isSolvedCorrectly(solvedMatchField)) {
                 int blackAndWhitesBefore;
                 do {
                     blackAndWhitesBefore = solvedMatchField.getFieldsNotWithState(Field.State.UNKNOWN).size();
+                    long s = System.currentTimeMillis();
                     setImpossibleHintFieldsToBlack();
+                    count_setImpossibleHintFieldsToBlack += System.currentTimeMillis() - s;
+                    s = System.currentTimeMillis();
                     useHintsOfWhiteHintFields();
+                    count_useHintsOfWhiteHintFields += System.currentTimeMillis() - s;
+                    s = System.currentTimeMillis();
                     processPotentialWhiteFieldsForConnectedShape();
+                    count_processPotentialWhiteFieldsForConnectedShape += System.currentTimeMillis() - s;
                 } while (solvedMatchField.getFieldsNotWithState(Field.State.UNKNOWN).size() != blackAndWhitesBefore);
+                long s = System.currentTimeMillis();
                 doEducatedGuess();
+                count_doEducatedGuess += System.currentTimeMillis() - s;
             }
+            long s = System.currentTimeMillis();
             doBacktracking();
+            count_doBacktracking += System.currentTimeMillis() - s;
         }
+        System.out.println("Solved " + solvedMatchField.getEdgeSize() + "x" + solvedMatchField.getEdgeSize() + " Matchfield in " + (System.currentTimeMillis() - start) + " Milis!");
+        System.out.println("count_setImpossibleHintFieldsToBlack: " + count_setImpossibleHintFieldsToBlack);
+        System.out.println("count_useHintsOfWhiteHintFields: " + count_useHintsOfWhiteHintFields);
+        System.out.println("count_processPotentialWhiteFieldsForConnectedShape: " + count_processPotentialWhiteFieldsForConnectedShape);
+        System.out.println("count_doBacktracking: " + count_doBacktracking);
+        System.out.println("count_doEducatedGuess: " + count_doEducatedGuess);
     }
 
     private void setImpossibleHintFieldsToBlack() {
@@ -99,21 +121,37 @@ public class YajisanKazusanSolver {
     }
 
     private void processPotentialWhiteFieldsForConnectedShape() {
+        List<Field> toBeWhitedFields = new ArrayList<>();
         for (FieldIndex actFieldIndex : potentialMustBeWhiteStack) {
             Field actField = solvedMatchField.getFieldAt(actFieldIndex);
-            if(actField == null) {
+            if (actField == null) {
                 continue;
             }
             if (actField.getFieldState() == Field.State.UNKNOWN) {
-                actField.setFieldState(Field.State.BLACK);
-                if (SolverUtils.canOrAreWhiteFieldsStillBeConnected(solvedMatchField)) {
+                int xStart = actFieldIndex.getX();
+                int yStart = actFieldIndex.getY();
+                int count = 0;
+                for (int x = -1; x <= 1; x += 2) {
+                    for (int y = -1; y <= 1; y += 2) {
+                        Field borderField = solvedMatchField.getFieldAt(xStart + x, yStart + y);
+                        if (borderField != null && borderField.getFieldState() == Field.State.BLACK) {
+                            count++;
+                        }
+                    }
+                }
+                if (count >= 1) {
+                    actField.setFieldState(Field.State.BLACK);
+                    if (!SolverUtils.canOrAreWhiteFieldsStillBeConnected(solvedMatchField)) {
+                        toBeWhitedFields.add(actField);
+                    }
                     actField.setFieldState(Field.State.UNKNOWN);
-                } else {
-                    setStateAndAddToSolution(actField, Field.State.WHITE);
                 }
             }
         }
         potentialMustBeWhiteStack.clear();
+        for (Field whiteField : toBeWhitedFields) {
+            setStateAndAddToSolution(whiteField, Field.State.WHITE);
+        }
     }
 
     private void doEducatedGuess() {
@@ -162,18 +200,14 @@ public class YajisanKazusanSolver {
         alreadySolvedFieldIndexes.add(index);
         //Wenn State schwarz alle Nachbarn weiß setzen
         if (fieldState == Field.State.BLACK) {
-            for (Direction directions : Direction.values()) {
-                Field actNeighbourField = solvedMatchField.getNeighbourTo(field, directions);
+            for (Field actNeighbourField : solvedMatchField.getAllNeighbours(field)) {
                 if (actNeighbourField != null && actNeighbourField.getFieldState() == Field.State.UNKNOWN) {
                     setStateAndAddToSolution(actNeighbourField, Field.State.WHITE);
-                    //Felder finden, die eventuell weiß sein müssen, um eine zusammenhängende Fläche zu haben
-                    FieldIndex fieldIndexOfActField = solvedMatchField.getIndexOfField(field);
-                    potentialMustBeWhiteStack.add(new FieldIndex(fieldIndexOfActField.getX() + 1, fieldIndexOfActField.getY() + 1));
-                    potentialMustBeWhiteStack.add(new FieldIndex(fieldIndexOfActField.getX() + 1, fieldIndexOfActField.getY() - 1));
-                    potentialMustBeWhiteStack.add(new FieldIndex(fieldIndexOfActField.getX() - 1, fieldIndexOfActField.getY() + 1));
-                    potentialMustBeWhiteStack.add(new FieldIndex(fieldIndexOfActField.getX() - 1, fieldIndexOfActField.getY() - 1));
                 }
             }
+            //Felder finden, die weiß sein müssen, um eine zusammenhänge Fläche zu erhalten
+        } else if (fieldState == Field.State.WHITE) {
+            potentialMustBeWhiteStack.addAll(solvedMatchField.getAllNeighbours(field).stream().map(solvedMatchField::getIndexOfField).collect(Collectors.toList()));
         }
     }
 }

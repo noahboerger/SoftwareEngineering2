@@ -191,16 +191,24 @@ final class SolverUtils {
         }
 
         BlackAndWhiteSolutionDTO potentialCorrectSolution = null;
-        for (BlackAndWhiteSolutionDTO actSolution : getListOfPossibleSolutions(matchField, startField, hintField.getArrowDirection())) {
+        List<BlackAndWhiteSolutionDTO> solutionDTOList = getListOfPossibleSolutions(matchField, startField, hintField.getArrowDirection());
+        if (solutionDTOList.isEmpty()) {
+            return null;
+        }
+        Stack<Field> blacks = solutionDTOList.get(0).toBeBlackedFields;
+        Stack<Field> white = solutionDTOList.get(0).toBeWhitedFields;
+        for (BlackAndWhiteSolutionDTO actSolution : solutionDTOList) {
             if (actSolution.toBeBlackedFields.size() + alreadyBlackInRow == hintField.getAmount()) {
                 if (potentialCorrectSolution == null) {
                     potentialCorrectSolution = actSolution;
                 } else {
                     return null;
                 }
+                blacks.removeAll(potentialCorrectSolution.toBeWhitedFields);
+                white.removeAll(potentialCorrectSolution.toBeBlackedFields);
             }
         }
-        return potentialCorrectSolution;
+        return Objects.requireNonNullElseGet(potentialCorrectSolution, () -> new BlackAndWhiteSolutionDTO(blacks, white));
     }
 
     //Berechnet alle noch möglichen Lösungen für eine Reihe inklusive des aktuellen Feldes (Hilfsmethode für getBlackAndWhiteUseHint)

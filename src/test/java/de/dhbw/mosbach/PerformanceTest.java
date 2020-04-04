@@ -32,5 +32,7 @@ public class PerformanceTest {
             solver.getSolvedMatchField();
             System.out.println("Time for Solving 10x10: " + (System.currentTimeMillis() - beginning));
         }
+        //10x10 - maximal 7 Sekunden, normalerweise circa 1 Sekunde
+        //12x12 - circa 170 Sekunden
     }
 }
