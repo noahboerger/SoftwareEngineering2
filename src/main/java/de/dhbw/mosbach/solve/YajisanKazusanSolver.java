@@ -20,6 +20,7 @@ public class YajisanKazusanSolver {
     private List<FieldIndex> solvingOrderList = new ArrayList<>();
 
     Stack<FieldIndex> backtrackingStack = new Stack<>();
+    Set<FieldIndex> potentialMustBeWhiteStack = new HashSet<>();
 
     public YajisanKazusanSolver(MatchField unsolvedMatchField) {
         this.unsolvedMatchField = MatchField.deepCopy(unsolvedMatchField);
@@ -38,7 +39,7 @@ public class YajisanKazusanSolver {
         return MatchField.deepCopy(solvedMatchField);
     }
 
-    public List<FieldIndex> getSolvingParsingOrder() {
+    public List<FieldIndex> getSolvingOrder() {
         if (!isSolved) {
             solve();
             isSolved = true;
@@ -51,10 +52,11 @@ public class YajisanKazusanSolver {
             while (!SolverUtils.isDefinitelyUnableToBeSolvedAnyMore(solvedMatchField) && !SolverUtils.isSolvedCorrectly(solvedMatchField)) {
                 int blackAndWhitesBefore;
                 do {
-                    blackAndWhitesBefore = solvedMatchField.getNumberOfFieldsNotWithState(Field.State.UNKNOWN);
+                    blackAndWhitesBefore = solvedMatchField.getFieldsNotWithState(Field.State.UNKNOWN).size();
                     setImpossibleHintFieldsToBlack();
                     useHintsOfWhiteHintFields();
-                } while (solvedMatchField.getNumberOfFieldsNotWithState(Field.State.UNKNOWN) != blackAndWhitesBefore);
+                    processPotentialWhiteFieldsForConnectedShape();
+                } while (solvedMatchField.getFieldsNotWithState(Field.State.UNKNOWN).size() != blackAndWhitesBefore);
                 doEducatedGuess();
             }
             doBacktracking();
@@ -96,8 +98,29 @@ public class YajisanKazusanSolver {
         }
     }
 
+    private void processPotentialWhiteFieldsForConnectedShape() {
+        for (FieldIndex actFieldIndex : potentialMustBeWhiteStack) {
+            Field actField = solvedMatchField.getFieldAt(actFieldIndex);
+            if(actField == null) {
+                continue;
+            }
+            if (actField.getFieldState() == Field.State.UNKNOWN) {
+                actField.setFieldState(Field.State.BLACK);
+                if (SolverUtils.canOrAreWhiteFieldsStillBeConnected(solvedMatchField)) {
+                    actField.setFieldState(Field.State.UNKNOWN);
+                } else {
+                    setStateAndAddToSolution(actField, Field.State.WHITE);
+                }
+            }
+        }
+        potentialMustBeWhiteStack.clear();
+    }
+
     private void doEducatedGuess() {
         Field guessBlackField = SolverUtils.findPotentialBestBlackGuessHintField(solvedMatchField);
+        if (guessBlackField == null) {
+            guessBlackField = SolverUtils.findPotentialBestBlackGuessStandardField(solvedMatchField);
+        }
         if (guessBlackField == null) {
             guessBlackField = SolverUtils.findFirstFieldWithState(solvedMatchField, Field.State.UNKNOWN);
         }
@@ -143,6 +166,12 @@ public class YajisanKazusanSolver {
                 Field actNeighbourField = solvedMatchField.getNeighbourTo(field, directions);
                 if (actNeighbourField != null && actNeighbourField.getFieldState() == Field.State.UNKNOWN) {
                     setStateAndAddToSolution(actNeighbourField, Field.State.WHITE);
+                    //Felder finden, die eventuell weiß sein müssen, um eine zusammenhängende Fläche zu haben
+                    FieldIndex fieldIndexOfActField = solvedMatchField.getIndexOfField(field);
+                    potentialMustBeWhiteStack.add(new FieldIndex(fieldIndexOfActField.getX() + 1, fieldIndexOfActField.getY() + 1));
+                    potentialMustBeWhiteStack.add(new FieldIndex(fieldIndexOfActField.getX() + 1, fieldIndexOfActField.getY() - 1));
+                    potentialMustBeWhiteStack.add(new FieldIndex(fieldIndexOfActField.getX() - 1, fieldIndexOfActField.getY() + 1));
+                    potentialMustBeWhiteStack.add(new FieldIndex(fieldIndexOfActField.getX() - 1, fieldIndexOfActField.getY() - 1));
                 }
             }
         }

@@ -17,7 +17,7 @@ public class SolverUtilsTest {
 
     @Before
     public void setUp() {
-        testMatchField = new MatchField(TestUtils.getTestFieldList());
+        testMatchField = new MatchField(TestUtils.getUnsolvedTestFieldList());
     }
 
     @Test

@@ -83,7 +83,7 @@ public class SolverSceneController {
                 "Dieses Programm kann das Yajisan-Kazusan Rätsel lösen.\n" +
                         "Du kannst einen Schritt weitergehen: (F5)\n" +
                         "Das ganze Spiel direkt lösen: (F6)\n" +
-                        "Ein Schritt zurück gehen: (F7)\n" +
+                        "Einen Schritt zurück gehen: (F7)\n" +
                         "Oder das aktuelle Spielfeld schließen: (F8)\n\n" +
                         "Viel Spaß wünscht der Entwickler: Noah Börger";
         manualAlert.setContentText(userManual);
@@ -110,7 +110,7 @@ public class SolverSceneController {
 
     private void initView() {
         int frameSize = 5;
-        boardPane.setPrefSize(gameSize + 2 * frameSize, gameSize + 2 * frameSize);
+        boardPane.setPrefSize(getFieldPaneSize() * actShowingMatchField.getEdgeSize() + 2 * frameSize, getFieldPaneSize() * actShowingMatchField.getEdgeSize() + 2 * frameSize);
         boardPane.setStyle("-fx-border-width: " + frameSize);
 
         fieldsMap = new HashMap<>();
@@ -158,18 +158,36 @@ public class SolverSceneController {
         }
     }
 
-    private void calculateSolutionIfNotDone() {
+    public boolean calculateSolutionIfNotDone(boolean fullSolution) {
         if (solution == null || solvedMatchField == null) {
-            solution = solver.getSolvingParsingOrder();
-            solvedMatchField = solver.getSolvedMatchField();
+            final LoadingDialog loadingDialog = new LoadingDialog(menuBar.getScene().getWindow(), "Spielfeld wird gelöst...");
+
+            loadingDialog.addTaskEndNotification(() -> {
+                if (solvedMatchField != null && solution != null) {
+                    if (fullSolution) {
+                        doFullSolution();
+                    } else {
+                        doStep();
+                    }
+                } else {
+                    showWarningDialog("Das geladenen Spielfeld hat keine Lösung!");
+                }
+            });
+            loadingDialog.executeRunnable(() -> {
+                try {
+                    solvedMatchField = solver.getSolvedMatchField();
+                    solution = solver.getSolvingOrder();
+                } catch (IllegalStateException ise) {
+                    return;
+                }
+            });
+            return true;
         }
+        return false;
     }
 
     private void doStep() {
-        try {
-            calculateSolutionIfNotDone();
-        } catch (IllegalStateException ise) {
-            showWarningDialog("Das geladenen Spielfeld hat keine Lösung!");
+        if (calculateSolutionIfNotDone(false)) {
             return;
         }
         if (actStep < actShowingMatchField.getEdgeSize() * actShowingMatchField.getEdgeSize()) {
@@ -193,10 +211,7 @@ public class SolverSceneController {
     }
 
     private void doFullSolution() {
-        try {
-            calculateSolutionIfNotDone();
-        } catch (IllegalStateException ise) {
-            showWarningDialog("Das geladenen Spielfeld hat keine Lösung!");
+        if (calculateSolutionIfNotDone(true)) {
             return;
         }
         if (actStep < actShowingMatchField.getEdgeSize() * actShowingMatchField.getEdgeSize()) {

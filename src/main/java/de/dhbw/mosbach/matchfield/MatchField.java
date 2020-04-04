@@ -138,18 +138,18 @@ public class MatchField {
                 .collect(Collectors.toList());
     }
 
-    public int getNumberOfFieldsWithState(Field.State state) {
-        return (int) fieldList.stream()
+    public List<Field> getFieldsWithState(Field.State state) {
+        return fieldList.stream()
                 .flatMap(Collection::stream)
                 .filter(field -> field.getFieldState() == state)
-                .count();
+                .collect(Collectors.toList());
     }
 
-    public int getNumberOfFieldsNotWithState(Field.State notState) {
-        return (int) fieldList.stream()
+    public List<Field> getFieldsNotWithState(Field.State notState) {
+        return fieldList.stream()
                 .flatMap(Collection::stream)
                 .filter(field -> field.getFieldState() != notState)
-                .count();
+                .collect(Collectors.toList());
     }
 
     private boolean isIndexUnreachable(int x, int y) {

@@ -14,7 +14,7 @@ final public class TestUtils {
         throw new IllegalStateException("Uninstanzierbare Klasse");
     }
 
-    public static List<List<Field>> getTestFieldList() {
+    public static List<List<Field>> getUnsolvedTestFieldList() {
         List<List<Field>> fieldList = new ArrayList<>();
 
         List<Field> column0 = new ArrayList<>();
@@ -63,12 +63,11 @@ final public class TestUtils {
     }
 
     public static MatchField getUnsolvedTestMatchField() {
-        return new MatchField(getTestFieldList());
+        return new MatchField(getUnsolvedTestFieldList());
     }
 
-
-    public static MatchField getSolvedTestMatchField() {
-        List<List<Field>> solutionList = getTestFieldList();
+    public static List<List<Field>> getSolvedTestFieldList() {
+        List<List<Field>> solutionList = getUnsolvedTestFieldList();
 
         solutionList.get(0).get(0).setFieldState(Field.State.WHITE);
         solutionList.get(0).get(1).setFieldState(Field.State.WHITE);
@@ -100,6 +99,10 @@ final public class TestUtils {
         solutionList.get(4).get(3).setFieldState(Field.State.WHITE);
         solutionList.get(4).get(4).setFieldState(Field.State.BLACK);
 
-        return new MatchField(solutionList);
+        return solutionList;
+    }
+
+    public static MatchField getSolvedTestMatchField() {
+        return new MatchField(getSolvedTestFieldList());
     }
 }
