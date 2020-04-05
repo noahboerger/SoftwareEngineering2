@@ -7,7 +7,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
 
-public class JSONMatchFieldParser implements MatchFieldParser{
+public class JSONMatchFieldParser implements MatchFieldParser {
 
     private final String filePathMatchFieldFile;
     private final JSONMatchFieldParser.ParsingResult parsingResult;
@@ -17,21 +17,11 @@ public class JSONMatchFieldParser implements MatchFieldParser{
         parsingResult = parseFile();
     }
 
-    private static class ParsingResult {
-        private final MatchField matchField;
-        private final MatchFieldParser.ParsingValidationResult parsingValidationResult;
-
-        private ParsingResult(MatchField matchField, MatchFieldParser.ParsingValidationResult parsingValidation) {
-            this.matchField = matchField;
-            this.parsingValidationResult = parsingValidation;
-        }
-    }
-
     private JSONMatchFieldParser.ParsingResult parseFile() {
         final ObjectMapper mapper = new ObjectMapper();
         MatchField matchField;
         File fieldFile = new File(filePathMatchFieldFile);
-        if(!fieldFile.exists() || !fieldFile.isFile()) {
+        if (!fieldFile.exists() || !fieldFile.isFile()) {
             return new ParsingResult(null, ParsingValidationResult.FILE_LOADING_ERROR);
         }
         try {
@@ -49,5 +39,15 @@ public class JSONMatchFieldParser implements MatchFieldParser{
 
     public ParsingValidationResult getParsingValidationResult() {
         return parsingResult.parsingValidationResult;
+    }
+
+    private static class ParsingResult {
+        private final MatchField matchField;
+        private final MatchFieldParser.ParsingValidationResult parsingValidationResult;
+
+        private ParsingResult(MatchField matchField, MatchFieldParser.ParsingValidationResult parsingValidation) {
+            this.matchField = matchField;
+            this.parsingValidationResult = parsingValidation;
+        }
     }
 }

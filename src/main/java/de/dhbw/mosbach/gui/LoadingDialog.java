@@ -26,7 +26,7 @@ public class LoadingDialog {
     private final ProgressIndicator progressIndicator = new ProgressIndicator(ProgressIndicator.INDETERMINATE_PROGRESS);
     private final Stage dialogStage = new Stage(StageStyle.UNDECORATED);
 
-    public ObservableList<Void> resultNotificationList= FXCollections.observableArrayList();
+    public ObservableList<Void> resultNotificationList = FXCollections.observableArrayList();
 
     public LoadingDialog(Window owner, String text) {
         dialogStage.initModality(Modality.WINDOW_MODAL);
@@ -57,7 +57,7 @@ public class LoadingDialog {
         vbox.setAlignment(Pos.CENTER);
         vbox.setMinSize(330, 120);
         final Label label = new Label(text);
-        vbox.getChildren().addAll(label,progressIndicator);
+        vbox.getChildren().addAll(label, progressIndicator);
         mainPane.setTop(vbox);
         dialogStage.setScene(scene);
         dialogStage.show();
@@ -71,18 +71,17 @@ public class LoadingDialog {
                 return null;
             }
         };
-        EventHandler<WorkerStateEvent> eh = event -> {
+        EventHandler<WorkerStateEvent> notifyListeners = event -> {
             progressIndicator.progressProperty().unbind();
             dialogStage.close();
             try {
                 resultNotificationList.add(null);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         };
-        executionTask.setOnSucceeded(eh);
-        executionTask.setOnFailed(eh);
+        executionTask.setOnSucceeded(notifyListeners);
+        executionTask.setOnFailed(notifyListeners);
 
         new Thread(executionTask).start();
     }

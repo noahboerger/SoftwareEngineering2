@@ -16,35 +16,19 @@ final class SolverUtils {
         throw new IllegalStateException("Uninstanzierbare Klasse");
     }
 
-    //Statische DTO-Klasse zum zurückgeben einer Liste an zu schwärzenden und weißen Feldern
-    static class BlackAndWhiteSolutionDTO {
-        Stack<Field> toBeBlackedFields;
-        Stack<Field> toBeWhitedFields;
-
-        private BlackAndWhiteSolutionDTO(Stack<Field> toBeBlackedFields, Stack<Field> toBeWhitedFields) {
-            this.toBeBlackedFields = toBeBlackedFields;
-            this.toBeWhitedFields = toBeWhitedFields;
-        }
-
-        private BlackAndWhiteSolutionDTO() {
-            this(new Stack<>(), new Stack<>());
-        }
-
-        private static BlackAndWhiteSolutionDTO copyOf(BlackAndWhiteSolutionDTO solution) {
-            @SuppressWarnings("unchecked") //Typ-Sicher, da der Typ des geclonten Stacks dem des vorherigen entspricht
-                    BlackAndWhiteSolutionDTO copy = new BlackAndWhiteSolutionDTO((Stack<Field>) solution.toBeBlackedFields.clone(), (Stack<Field>) solution.toBeWhitedFields.clone());
-            return copy;
-        }
+    //Gibt zurück ob ein Feld nicht mehr lösbar ist (z.B. aufgrund falsch geratener Felder)
+    static boolean isDefinitelyUnableToBeSolvedAnyMore(MatchField matchField) {
+        return !canOrIsEveryWhiteHintFieldStillGetCorrect(matchField) ||
+                !canOrAreWhiteFieldsStillBeConnected(matchField) ||
+                !areNoBlackFieldsConnected(matchField);
     }
 
     //Prüft ob das Feld bereits korrekt gelöst wurde
     static boolean isSolvedCorrectly(MatchField matchField) {
-        if (matchField.getFieldsWithState(Field.State.UNKNOWN).size() != 0) {
-            return false;
-        }
-        return canOrAreWhiteFieldsStillBeConnected(matchField) &&
-                canOrIsEveryWhiteHintFieldStillGetCorrect(matchField) &&
-                areNoBlackFieldsConnected(matchField);
+        return !(matchField.getFieldsWithState(Field.State.UNKNOWN).size() != 0 ||
+                !canOrAreWhiteFieldsStillBeConnected(matchField) ||
+                !canOrIsEveryWhiteHintFieldStillGetCorrect(matchField) ||
+                !areNoBlackFieldsConnected(matchField));
     }
 
     //Berechnet wie viele Schwarze Felder sich ab einem Feld in eine spezifische Richtung befeinden (ohne das Feld selbst)
@@ -105,13 +89,6 @@ final class SolverUtils {
         return potentialBlackField;
     }
 
-    //Gibt zurück ob ein Feld nicht mehr lösbar ist (z.B. aufgrund falsch geratener Felder)
-    static boolean isDefinitelyUnableToBeSolvedAnyMore(MatchField matchField) {
-        return !canOrIsEveryWhiteHintFieldStillGetCorrect(matchField) ||
-                !canOrAreWhiteFieldsStillBeConnected(matchField) ||
-                !areNoBlackFieldsConnected(matchField);
-    }
-
     //Überprüft ob die Hinweise von weißen Hinweißfeldern Feldern noch erfüllt werden können
     static boolean canOrIsEveryWhiteHintFieldStillGetCorrect(MatchField matchField) {
         for (List<Field> fields : matchField.getAllFields()) {
@@ -170,14 +147,10 @@ final class SolverUtils {
 
     //Gibt das erste gefundene Felde mit angegebenem Status oder null zurück
     static Field findFirstFieldWithState(MatchField matchField, Field.State fieldState) {
-        for (List<Field> fields : matchField.getAllFields()) {
-            for (Field actField : fields) {
-                if (actField.getFieldState() == fieldState) {
-                    return actField;
-                }
-            }
-        }
-        return null;
+        return matchField.getAllFields().stream()
+                .flatMap(Collection::stream)
+                .filter(field -> field.getFieldState() == fieldState)
+                .findFirst().orElse(null);
     }
 
     //Weißes Hintfield -> Hint nutzen, wenn möglich, gibt zu schwärzende und weiße Felder zurück
@@ -211,7 +184,7 @@ final class SolverUtils {
         return Objects.requireNonNullElseGet(potentialCorrectSolution, () -> new BlackAndWhiteSolutionDTO(blacks, white));
     }
 
-    //Berechnet alle noch möglichen Lösungen für eine Reihe inklusive des aktuellen Feldes (Hilfsmethode für getBlackAndWhiteUseHint)
+    //Berechnet alle noch möglichen Lösungen für eine Reihe inklusive des aktuellen Feldes (Hilfsmethode für getBlackAndWhiteUseHint und zum "Raten")
     static List<BlackAndWhiteSolutionDTO> getListOfPossibleSolutions(MatchField matchField, Field actField, Direction direction) {
         List<Field> upcomingFields = matchField.getFieldsToDirection(actField, direction);
         List<BlackAndWhiteSolutionDTO> solutionsList = new ArrayList<>();
@@ -324,12 +297,33 @@ final class SolverUtils {
                             .filter(solution -> solution.toBeBlackedFields.contains(actField)).count();
                     double actPartSolution = (double) solutions.size() / (double) numberOfWithActFieldBlack;
                     if (actHintFieldInRowOrColumn.getFieldState() == Field.State.WHITE) {
-                        actPartSolution *= 3;
+                        actPartSolution *= 2; //Deutlich höhere Wahrscheinlichkeit, wenn Hint-Feld das Hinweis gibt schon weiß
                     }
                     probability.put(actField, probability.get(actField) + actPartSolution);
                 }
             }
         }
         return probability.keySet().stream().max(Comparator.comparingDouble(probability::get)).orElse(null);
+    }
+
+    //Statische DTO-Klasse zum zurückgeben eines Stacks an zu schwärzenden und weißen Feldern
+    static class BlackAndWhiteSolutionDTO {
+        Stack<Field> toBeBlackedFields;
+        Stack<Field> toBeWhitedFields;
+
+        private BlackAndWhiteSolutionDTO(Stack<Field> toBeBlackedFields, Stack<Field> toBeWhitedFields) {
+            this.toBeBlackedFields = toBeBlackedFields;
+            this.toBeWhitedFields = toBeWhitedFields;
+        }
+
+        private BlackAndWhiteSolutionDTO() {
+            this(new Stack<>(), new Stack<>());
+        }
+
+        private static BlackAndWhiteSolutionDTO copyOf(BlackAndWhiteSolutionDTO solution) {
+            @SuppressWarnings("unchecked") //Typ-Sicher, da der Typ des geclonten Stacks dem des vorherigen entspricht
+                    BlackAndWhiteSolutionDTO copy = new BlackAndWhiteSolutionDTO((Stack<Field>) solution.toBeBlackedFields.clone(), (Stack<Field>) solution.toBeWhitedFields.clone());
+            return copy;
+        }
     }
 }

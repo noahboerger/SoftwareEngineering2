@@ -174,12 +174,8 @@ public class SolverSceneController {
                 }
             });
             loadingDialog.executeRunnable(() -> {
-                try {
-                    solvedMatchField = solver.getSolvedMatchField();
-                    solution = solver.getSolvingOrder();
-                } catch (IllegalStateException ise) {
-                    return;
-                }
+                solvedMatchField = solver.getSolvedMatchField();
+                solution = solver.getSolvingOrder();
             });
             return true;
         }

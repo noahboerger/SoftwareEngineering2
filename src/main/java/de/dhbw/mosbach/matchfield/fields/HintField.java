@@ -28,7 +28,7 @@ public class HintField extends AbstractField {
 
     @Override
     public String toString() {
-        return "HintField [" + super.toString() +" ArrowDirection: " + arrowDirection + " Amount: " + amount +"]";
+        return "HintField [" + super.toString() + " ArrowDirection: " + arrowDirection + " Amount: " + amount + "]";
     }
 
     @Override

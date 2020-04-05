@@ -11,7 +11,7 @@ public interface MatchFieldParser {
 
     ParsingValidationResult getParsingValidationResult();
 
-     enum ParsingValidationResult {
+    enum ParsingValidationResult {
         FILE_LOADING_ERROR("Laden der Datei ist fehlgeschlagen!"),
         FILE_NOT_VALID("Die Datei beinhaltet kein valides Spielfeld!"),
         PARSED_SUCCESSFUL("Datei wurde erfolgreich geparsed.");

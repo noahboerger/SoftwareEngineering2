@@ -1,6 +1,5 @@
 package de.dhbw.mosbach.solve;
 
-import de.dhbw.mosbach.matchfield.utils.Direction;
 import de.dhbw.mosbach.matchfield.MatchField;
 import de.dhbw.mosbach.matchfield.fields.Field;
 import de.dhbw.mosbach.matchfield.fields.HintField;
@@ -12,15 +11,13 @@ import java.util.stream.Collectors;
 public class YajisanKazusanSolver {
 
     private final MatchField unsolvedMatchField;
-
     private final MatchField solvedMatchField;
+    private final List<FieldIndex> solvingOrderList = new ArrayList<>();
     private boolean isSolved = false;
 
-    private Set<FieldIndex> alreadySolvedFieldIndexes = new HashSet<>();
-    private List<FieldIndex> solvingOrderList = new ArrayList<>();
-
-    Stack<FieldIndex> backtrackingStack = new Stack<>();
-    Set<FieldIndex> potentialMustBeWhiteStack = new HashSet<>();
+    private final Stack<FieldIndex> backtrackingStack = new Stack<>();
+    private final Set<FieldIndex> potentialMustBeWhiteStack = new HashSet<>();
+    private final Set<FieldIndex> alreadySolvedFieldIndexes = new HashSet<>();
 
     public YajisanKazusanSolver(MatchField unsolvedMatchField) {
         this.unsolvedMatchField = MatchField.deepCopy(unsolvedMatchField);
@@ -49,40 +46,21 @@ public class YajisanKazusanSolver {
 
     private void solve() {
         final long start = System.currentTimeMillis();
-        long count_setImpossibleHintFieldsToBlack = 0L;
-        long count_useHintsOfWhiteHintFields = 0L;
-        long count_processPotentialWhiteFieldsForConnectedShape = 0L;
-        long count_doEducatedGuess = 0L;
-        long count_doBacktracking = 0L;
         while (!SolverUtils.isSolvedCorrectly(solvedMatchField)) {
             while (!SolverUtils.isDefinitelyUnableToBeSolvedAnyMore(solvedMatchField) && !SolverUtils.isSolvedCorrectly(solvedMatchField)) {
                 int blackAndWhitesBefore;
                 do {
                     blackAndWhitesBefore = solvedMatchField.getFieldsNotWithState(Field.State.UNKNOWN).size();
-                    long s = System.currentTimeMillis();
                     setImpossibleHintFieldsToBlack();
-                    count_setImpossibleHintFieldsToBlack += System.currentTimeMillis() - s;
-                    s = System.currentTimeMillis();
                     useHintsOfWhiteHintFields();
-                    count_useHintsOfWhiteHintFields += System.currentTimeMillis() - s;
-                    s = System.currentTimeMillis();
                     processPotentialWhiteFieldsForConnectedShape();
-                    count_processPotentialWhiteFieldsForConnectedShape += System.currentTimeMillis() - s;
                 } while (solvedMatchField.getFieldsNotWithState(Field.State.UNKNOWN).size() != blackAndWhitesBefore);
-                long s = System.currentTimeMillis();
                 doEducatedGuess();
-                count_doEducatedGuess += System.currentTimeMillis() - s;
             }
-            long s = System.currentTimeMillis();
             doBacktracking();
-            count_doBacktracking += System.currentTimeMillis() - s;
+
         }
         System.out.println("Solved " + solvedMatchField.getEdgeSize() + "x" + solvedMatchField.getEdgeSize() + " Matchfield in " + (System.currentTimeMillis() - start) + " Milis!");
-        System.out.println("count_setImpossibleHintFieldsToBlack: " + count_setImpossibleHintFieldsToBlack);
-        System.out.println("count_useHintsOfWhiteHintFields: " + count_useHintsOfWhiteHintFields);
-        System.out.println("count_processPotentialWhiteFieldsForConnectedShape: " + count_processPotentialWhiteFieldsForConnectedShape);
-        System.out.println("count_doBacktracking: " + count_doBacktracking);
-        System.out.println("count_doEducatedGuess: " + count_doEducatedGuess);
     }
 
     private void setImpossibleHintFieldsToBlack() {

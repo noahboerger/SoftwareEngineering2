@@ -30,6 +30,18 @@ public class MatchField {
         this.fieldList = fieldList;
     }
 
+    public static MatchField deepCopy(MatchField matchField) {
+        List<List<Field>> copyFieldList = new ArrayList<>();
+        for (List<Field> rowFields : matchField.fieldList) {
+            List<Field> copyRowFields = new ArrayList<>();
+            copyFieldList.add(copyRowFields);
+            for (Field field : rowFields) {
+                copyRowFields.add(Field.deepCopy(field));
+            }
+        }
+        return new MatchField(copyFieldList);
+    }
+
     public Field getFieldAt(FieldIndex index) {
         return getFieldAt(index.getX(), index.getY());
     }
@@ -106,24 +118,11 @@ public class MatchField {
         return copyList;
     }
 
-    public static MatchField deepCopy(MatchField matchField) {
-        List<List<Field>> copyFieldList = new ArrayList<>();
-        for (List<Field> rowFields : matchField.fieldList) {
-            List<Field> copyRowFields = new ArrayList<>();
-            copyFieldList.add(copyRowFields);
-            for (Field field : rowFields) {
-                copyRowFields.add(Field.deepCopy(field));
-            }
-        }
-        return new MatchField(copyFieldList);
-    }
-
     public FieldIndex getIndexOfField(Field field) {
         final int size = getEdgeSize();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                Field actField = fieldList.get(x).get(y);
-                if (actField == field) {
+                if (fieldList.get(x).get(y) == field) {
                     return new FieldIndex(x, y);
                 }
             }

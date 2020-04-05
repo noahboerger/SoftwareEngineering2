@@ -15,7 +15,7 @@ public class JSONFileValidator implements FileValidator {
     }
 
     private ValidationResult analyzeFile() {
-        if(filePathMatchFieldFile == null || filePathMatchFieldFile.isBlank()) return ValidationResult.FILE_PATH_EMPTY;
+        if (filePathMatchFieldFile == null || filePathMatchFieldFile.isBlank()) return ValidationResult.FILE_PATH_EMPTY;
         if (fileNotExisting()) return ValidationResult.FILE_NOT_EXISTING;
         if (fileIsNoJSON()) return ValidationResult.FILE_IS_NOT_A_JSON;
         return ValidationResult.VALID_FILE;
