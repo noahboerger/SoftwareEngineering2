@@ -17,12 +17,12 @@ public class MatchField {
     final private List<List<Field>> fieldList;
 
     @JsonCreator
-    public MatchField(@JsonProperty("fieldList") List<List<Field>> fieldList) {
+    public MatchField(@JsonProperty("fieldList") final List<List<Field>> fieldList) {
         if (fieldList == null || fieldList.isEmpty() || fieldList.get(0) == null || fieldList.get(0).isEmpty()) {
             throw new IllegalArgumentException();
         }
-        int size = fieldList.size();
-        for (List<Field> row : fieldList) {
+        final int size = fieldList.size();
+        for (final List<Field> row : fieldList) {
             if (row.size() != size) {
                 throw new IllegalArgumentException();
             }
@@ -30,35 +30,36 @@ public class MatchField {
         this.fieldList = fieldList;
     }
 
-    public static MatchField deepCopy(MatchField matchField) {
-        List<List<Field>> copyFieldList = new ArrayList<>();
-        for (List<Field> rowFields : matchField.fieldList) {
-            List<Field> copyRowFields = new ArrayList<>();
+    public static MatchField deepCopy(final MatchField matchField) {
+        final List<List<Field>> copyFieldList = new ArrayList<>();
+        for (final List<Field> rowFields : matchField.fieldList) {
+            final List<Field> copyRowFields = new ArrayList<>();
             copyFieldList.add(copyRowFields);
-            for (Field field : rowFields) {
+            for (final Field field : rowFields) {
                 copyRowFields.add(Field.deepCopy(field));
             }
         }
         return new MatchField(copyFieldList);
     }
 
-    public Field getFieldAt(FieldIndex index) {
+    public Field getFieldAt(final FieldIndex index) {
         return getFieldAt(index.getX(), index.getY());
     }
 
-    public Field getFieldAt(int x, int y) {
+    public Field getFieldAt(final int x, final int y) {
         if (isIndexUnreachable(x, y)) {
             return null;
         }
         return fieldList.get(x).get(y);
     }
 
-    public Field getNeighbourTo(Field field, Direction direction) {
-        FieldIndex index = getIndexOfField(field);
+    public Field getNeighbourTo(final Field field, final Direction direction) {
+        final FieldIndex index = getIndexOfField(field);
         if (index == null) {
             return null;
         }
-        int x = index.getX(), y = index.getY();
+        int x = index.getX();
+        int y = index.getY();
         switch (direction) {
             case UP:
                 y--;
@@ -79,12 +80,13 @@ public class MatchField {
         return fieldList.get(x).get(y);
     }
 
-    public List<Field> getFieldsToDirection(Field field, Direction direction) {
-        FieldIndex index = getIndexOfField(field);
+    public List<Field> getFieldsToDirection(final Field field, final Direction direction) {
+        final FieldIndex index = getIndexOfField(field);
         if (index == null) {
             return Collections.emptyList();
         }
-        int xChange = 0, yChange = 0;
+        int xChange = 0;
+        int yChange = 0;
         switch (direction) {
             case UP:
                 yChange--;
@@ -99,8 +101,9 @@ public class MatchField {
                 xChange--;
                 break;
         }
-        int actX = (index.getX() + xChange), actY = (index.getY() + yChange);
-        List<Field> returnList = new ArrayList<>();
+        int actX = index.getX() + xChange;
+        int actY = index.getY() + yChange;
+        final List<Field> returnList = new ArrayList<>();
         while (actX >= 0 && actY >= 0 && actX < getEdgeSize() && actY < getEdgeSize()) {
             returnList.add(fieldList.get(actX).get(actY));
             actX += xChange;
@@ -111,14 +114,14 @@ public class MatchField {
 
     //List-Referenzen bleiben unveränderlich aber Referenzen auf Felder werden zurückgegeben
     public List<List<Field>> getAllFields() {
-        List<List<Field>> copyList = new ArrayList<>();
-        for (List<Field> actFieldList : fieldList) {
+        final List<List<Field>> copyList = new ArrayList<>();
+        for (final List<Field> actFieldList : fieldList) {
             copyList.add(List.copyOf(actFieldList));
         }
         return copyList;
     }
 
-    public FieldIndex getIndexOfField(Field field) {
+    public FieldIndex getIndexOfField(final Field field) {
         final int size = getEdgeSize();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
@@ -130,28 +133,28 @@ public class MatchField {
         return null;
     }
 
-    public List<Field> getAllNeighbours(Field field) {
+    public List<Field> getAllNeighbours(final Field field) {
         return Arrays.stream(Direction.values())
                 .map(direction -> getNeighbourTo(field, direction))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
-    public List<Field> getFieldsWithState(Field.State state) {
+    public List<Field> getFieldsWithState(final Field.State state) {
         return fieldList.stream()
                 .flatMap(Collection::stream)
                 .filter(field -> field.getFieldState() == state)
                 .collect(Collectors.toList());
     }
 
-    public List<Field> getFieldsNotWithState(Field.State notState) {
+    public List<Field> getFieldsNotWithState(final Field.State notState) {
         return fieldList.stream()
                 .flatMap(Collection::stream)
                 .filter(field -> field.getFieldState() != notState)
                 .collect(Collectors.toList());
     }
 
-    private boolean isIndexUnreachable(int x, int y) {
+    private boolean isIndexUnreachable(final int x, final int y) {
         final int size = getEdgeSize();
         return x < 0 || y < 0 || x >= size || y >= size;
     }
@@ -163,21 +166,24 @@ public class MatchField {
 
     @Override
     public String toString() {
-        StringBuilder stringBuilder = new StringBuilder("MatchField [");
-        for (List<Field> fields : fieldList) {
-            for (Field field : fields) {
+        final StringBuilder stringBuilder = new StringBuilder("MatchField [");
+        for (final List<Field> fields : fieldList) {
+            for (final Field field : fields) {
                 stringBuilder.append(field);
             }
         }
-        stringBuilder.append("]");
+        stringBuilder.append(']');
         return stringBuilder.toString();
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MatchField that = (MatchField) o;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        } else if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final MatchField that = (MatchField) o;
         return fieldList.equals(that.fieldList);
     }
 

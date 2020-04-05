@@ -11,17 +11,17 @@ import java.util.Objects;
 
 public class Main extends Application {
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         launch(args);
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(final Stage primaryStage) throws Exception {
         primaryStage.setTitle("Yajisan-Kazusan");
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getClassLoader().getResource("images/icon.png")).toExternalForm()));
 
-        Parent menu = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("fxml/MenuScene.fxml")));
-        Scene menuScene = new Scene(menu);
+        final Parent menu = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("fxml/MenuScene.fxml")));
+        final Scene menuScene = new Scene(menu);
         menuScene.getStylesheets().add(Objects.requireNonNull(getClass().getClassLoader().getResource("css/style.css")).toExternalForm());
         primaryStage.setScene(menuScene);
         primaryStage.setResizable(false);

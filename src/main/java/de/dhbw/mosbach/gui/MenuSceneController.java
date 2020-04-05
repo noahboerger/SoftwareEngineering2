@@ -29,22 +29,22 @@ public class MenuSceneController {
     private TextField filePathField;
 
     @FXML
-    public void handleChooseFile(ActionEvent event) {
-        Stage activeStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        FileChooser fileChooser = new FileChooser();
+    public void handleChooseFile(final ActionEvent event) {
+        final Stage activeStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        final FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("JSON mit Spielfeld auswählen...");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("JSON-Dateien", "*.json", "*.JSON"));
-        File selectedFile = fileChooser.showOpenDialog(activeStage);
+        final File selectedFile = fileChooser.showOpenDialog(activeStage);
         if (selectedFile != null) {
             filePathField.setText(selectedFile.getAbsolutePath());
         }
     }
 
     @FXML
-    public void handleStartMainScene(ActionEvent event) throws IOException {
+    public void handleStartMainScene(final ActionEvent event) throws IOException {
         final JSONFileValidator analyzer = new JSONFileValidator(filePathField.getText());
         if (analyzer.getValidationResult() != JSONFileValidator.ValidationResult.VALID_FILE) {
-            Alert fileNotValidAlert = new Alert(Alert.AlertType.ERROR);
+            final Alert fileNotValidAlert = new Alert(Alert.AlertType.ERROR);
             fileNotValidAlert.setTitle("Unpassende Datei ausgewählt!");
             fileNotValidAlert.setHeaderText(null);
             fileNotValidAlert.setContentText(analyzer.getValidationResult().getErrorMessage());
@@ -52,9 +52,9 @@ public class MenuSceneController {
             return;
         }
         final MatchFieldParser parser = new JSONMatchFieldParser(filePathField.getText());
-        MatchFieldParser.ParsingValidationResult result = parser.getParsingValidationResult();
+        final MatchFieldParser.ParsingValidationResult result = parser.getParsingValidationResult();
         if (result != MatchFieldParser.ParsingValidationResult.PARSED_SUCCESSFUL) {
-            Alert fileNotValidAlert = new Alert(Alert.AlertType.ERROR);
+            final Alert fileNotValidAlert = new Alert(Alert.AlertType.ERROR);
             fileNotValidAlert.setTitle("Datei ist korrupt!");
             fileNotValidAlert.setHeaderText(null);
             if (result == null) {
@@ -65,14 +65,14 @@ public class MenuSceneController {
             fileNotValidAlert.showAndWait();
             return;
         }
-        Stage activeStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/SolverScene.fxml"));
-        Parent solver = loader.load();
+        final Stage activeStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        final FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/SolverScene.fxml"));
+        final Parent solver = loader.load();
 
-        SolverSceneController solverSceneController = loader.getController();
+        final SolverSceneController solverSceneController = loader.getController();
         solverSceneController.init(new YajisanKazusanSolver(parser.getMatchFieldOfParsedFile().orElseThrow(() -> new IllegalStateException("MatchField can not be null here!"))));
 
-        Scene solverScene = new Scene(solver);
+        final Scene solverScene = new Scene(solver);
         solverScene.setOnKeyPressed(solverSceneController::onKeyboardPress);
         solverScene.getStylesheets().add(Objects.requireNonNull(getClass().getClassLoader().getResource("css/style.css")).toExternalForm());
 
@@ -82,10 +82,10 @@ public class MenuSceneController {
     //Menu-Bar
     @FXML
     public void handleHelp() {
-        Alert manualAlert = new Alert(Alert.AlertType.INFORMATION);
+        final Alert manualAlert = new Alert(Alert.AlertType.INFORMATION);
         manualAlert.setTitle("Nutzungsinformationen");
         manualAlert.setHeaderText("Anleitung zur Bedienung des Yajisan-Kazusan-Lösers");
-        String userManual =
+        final String userManual =
                 "Dieses Programm kann das Yajisan-Kazusan Rätsel lösen.\n" +
                         "Öffne hierzu einfach auf dem Startbildschirm eine JSON-Datei.\n" +
                         "Ziehe diese hierzu in das Fenster oder gebe den Pfad ein.\n" +
@@ -102,11 +102,12 @@ public class MenuSceneController {
 
     //Drag and Drop
     @FXML
-    public void handleDragDroppedEvent(DragEvent event) {
-        Dragboard db = event.getDragboard();
+    public void handleDragDroppedEvent(final DragEvent event) {
+        final Dragboard db = event.getDragboard();
         if (db.hasFiles()) {
-            List<File> files = db.getFiles();
-            if (files.size() == 1) {
+            final List<File> files = db.getFiles();
+            final int acceptedFileSize = 1;
+            if (files.size() == acceptedFileSize) {
                 filePathField.setText(files.get(0).getAbsolutePath());
                 event.setDropCompleted(true);
             }
@@ -115,14 +116,13 @@ public class MenuSceneController {
     }
 
     @FXML
-    public void handleDragOverEvent(DragEvent event) {
-        Dragboard db = event.getDragboard();
+    public void handleDragOverEvent(final DragEvent event) {
+        final Dragboard db = event.getDragboard();
         if (event.getDragboard().hasFiles()) {
-            List<File> files = db.getFiles();
-            if (files.size() == 1) {
-                if (new JSONFileValidator(files.get(0).getAbsolutePath()).getValidationResult() == JSONFileValidator.ValidationResult.VALID_FILE) {
-                    event.acceptTransferModes(TransferMode.ANY);
-                }
+            final List<File> files = db.getFiles();
+            final int acceptedFileSize = 1;
+            if (files.size() == acceptedFileSize && new JSONFileValidator(files.get(0).getAbsolutePath()).getValidationResult() == JSONFileValidator.ValidationResult.VALID_FILE) {
+                event.acceptTransferModes(TransferMode.ANY);
             }
         }
         event.consume();

@@ -6,7 +6,7 @@ public class FieldIndex {
     private final int x;
     private final int y;
 
-    public FieldIndex(int x, int y) {
+    public FieldIndex(final int x, final int y) {
         this.x = x;
         this.y = y;
     }
@@ -20,10 +20,13 @@ public class FieldIndex {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        FieldIndex that = (FieldIndex) o;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        } else if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final FieldIndex that = (FieldIndex) o;
         return x == that.x &&
                 y == that.y;
     }

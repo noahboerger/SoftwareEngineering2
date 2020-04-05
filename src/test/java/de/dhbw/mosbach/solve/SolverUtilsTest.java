@@ -85,9 +85,9 @@ public class SolverUtilsTest {
         Assert.assertTrue(SolverUtils.canOrIsEveryWhiteHintFieldStillGetCorrect(testMatchField));
         testMatchField.getFieldAt(0, 0).setFieldState(Field.State.WHITE);
         testMatchField.getFieldAt(4, 1).setFieldState(Field.State.WHITE);
-        testMatchField.getFieldAt(1,0).setFieldState(Field.State.BLACK);
+        testMatchField.getFieldAt(1, 0).setFieldState(Field.State.BLACK);
         Assert.assertTrue(SolverUtils.canOrIsEveryWhiteHintFieldStillGetCorrect(testMatchField));
-        testMatchField.getFieldAt(4,0).setFieldState(Field.State.BLACK);
+        testMatchField.getFieldAt(4, 0).setFieldState(Field.State.BLACK);
         Assert.assertFalse(SolverUtils.canOrIsEveryWhiteHintFieldStillGetCorrect(testMatchField));
     }
 

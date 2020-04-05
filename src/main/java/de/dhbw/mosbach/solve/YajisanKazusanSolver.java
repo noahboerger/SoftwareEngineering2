@@ -13,13 +13,12 @@ public class YajisanKazusanSolver {
     private final MatchField unsolvedMatchField;
     private final MatchField solvedMatchField;
     private final List<FieldIndex> solvingOrderList = new ArrayList<>();
-    private boolean isSolved = false;
-
     private final Stack<FieldIndex> backtrackingStack = new Stack<>();
     private final Set<FieldIndex> potentialMustBeWhiteStack = new HashSet<>();
     private final Set<FieldIndex> alreadySolvedFieldIndexes = new HashSet<>();
+    private boolean isSolved;
 
-    public YajisanKazusanSolver(MatchField unsolvedMatchField) {
+    public YajisanKazusanSolver(final MatchField unsolvedMatchField) {
         this.unsolvedMatchField = MatchField.deepCopy(unsolvedMatchField);
         this.solvedMatchField = MatchField.deepCopy(unsolvedMatchField);
     }
@@ -64,12 +63,12 @@ public class YajisanKazusanSolver {
     }
 
     private void setImpossibleHintFieldsToBlack() {
-        for (List<Field> allField : solvedMatchField.getAllFields()) {
-            for (Field actField : allField) {
+        for (final List<Field> allField : solvedMatchField.getAllFields()) {
+            for (final Field actField : allField) {
                 if (actField.getFieldState() != Field.State.UNKNOWN || !(actField instanceof HintField)) {
                     continue;
                 }
-                HintField actHintField = (HintField) actField;
+                final HintField actHintField = (HintField) actField;
                 final int maxPossibleBlackFields = SolverUtils.calculateMaxPossibleBlackFieldsToDirection(solvedMatchField, actHintField, actHintField.getArrowDirection());
                 if (actHintField.getAmount() > maxPossibleBlackFields) {
                     setStateAndAddToSolution(actHintField, Field.State.BLACK);
@@ -79,19 +78,19 @@ public class YajisanKazusanSolver {
     }
 
     private void useHintsOfWhiteHintFields() {
-        for (List<Field> allField : solvedMatchField.getAllFields()) {
-            for (Field actField : allField) {
+        for (final List<Field> allField : solvedMatchField.getAllFields()) {
+            for (final Field actField : allField) {
                 if (actField.getFieldState() != Field.State.WHITE || !(actField instanceof HintField)) {
                     continue;
                 }
-                SolverUtils.BlackAndWhiteSolutionDTO solution = SolverUtils.getBlackAndWhiteUseHint(solvedMatchField, (HintField) actField);
+                final SolverUtils.BlackAndWhiteSolutionDTO solution = SolverUtils.getBlackAndWhiteUseHint(solvedMatchField, (HintField) actField);
                 if (solution == null) {
                     continue;
                 }
-                for (Field whiteField : solution.toBeWhitedFields) {
+                for (final Field whiteField : solution.toBeWhitedFields) {
                     setStateAndAddToSolution(whiteField, Field.State.WHITE);
                 }
-                for (Field blackField : solution.toBeBlackedFields) {
+                for (final Field blackField : solution.toBeBlackedFields) {
                     setStateAndAddToSolution(blackField, Field.State.BLACK);
                 }
             }
@@ -99,25 +98,26 @@ public class YajisanKazusanSolver {
     }
 
     private void processPotentialWhiteFieldsForConnectedShape() {
-        List<Field> toBeWhitedFields = new ArrayList<>();
-        for (FieldIndex actFieldIndex : potentialMustBeWhiteStack) {
-            Field actField = solvedMatchField.getFieldAt(actFieldIndex);
+        final List<Field> toBeWhitedFields = new ArrayList<>();
+        for (final FieldIndex actFieldIndex : potentialMustBeWhiteStack) {
+            final Field actField = solvedMatchField.getFieldAt(actFieldIndex);
             if (actField == null) {
                 continue;
             }
             if (actField.getFieldState() == Field.State.UNKNOWN) {
-                int xStart = actFieldIndex.getX();
-                int yStart = actFieldIndex.getY();
+                final int xStart = actFieldIndex.getX();
+                final int yStart = actFieldIndex.getY();
                 int count = 0;
                 for (int x = -1; x <= 1; x += 2) {
                     for (int y = -1; y <= 1; y += 2) {
-                        Field borderField = solvedMatchField.getFieldAt(xStart + x, yStart + y);
+                        final Field borderField = solvedMatchField.getFieldAt(xStart + x, yStart + y);
                         if (borderField != null && borderField.getFieldState() == Field.State.BLACK) {
                             count++;
                         }
                     }
                 }
-                if (count >= 1) {
+                final int minimumNeighboursForBlockingField = 1;
+                if (count >= minimumNeighboursForBlockingField) {
                     actField.setFieldState(Field.State.BLACK);
                     if (!SolverUtils.canOrAreWhiteFieldsStillBeConnected(solvedMatchField)) {
                         toBeWhitedFields.add(actField);
@@ -127,7 +127,7 @@ public class YajisanKazusanSolver {
             }
         }
         potentialMustBeWhiteStack.clear();
-        for (Field whiteField : toBeWhitedFields) {
+        for (final Field whiteField : toBeWhitedFields) {
             setStateAndAddToSolution(whiteField, Field.State.WHITE);
         }
     }
@@ -154,11 +154,11 @@ public class YajisanKazusanSolver {
         if (backtrackingStack.empty()) {
             throw new IllegalStateException();
         }
-        FieldIndex lastGuess = backtrackingStack.pop();
-        List<FieldIndex> toBeUnsetFieldIndexes = solvingOrderList.stream()
+        final FieldIndex lastGuess = backtrackingStack.pop();
+        final List<FieldIndex> toBeUnsetFieldIndexes = solvingOrderList.stream()
                 .dropWhile(index -> !index.equals(lastGuess)).collect(Collectors.toList());
 
-        for (FieldIndex toBeUnsetFieldIndex : toBeUnsetFieldIndexes) {
+        for (final FieldIndex toBeUnsetFieldIndex : toBeUnsetFieldIndexes) {
             solvedMatchField.getFieldAt(toBeUnsetFieldIndex).setFieldState(Field.State.UNKNOWN);
             solvingOrderList.remove(toBeUnsetFieldIndex);
             alreadySolvedFieldIndexes.remove(toBeUnsetFieldIndex);
@@ -167,8 +167,8 @@ public class YajisanKazusanSolver {
         setStateAndAddToSolution(solvedMatchField.getFieldAt(lastGuess), Field.State.WHITE);
     }
 
-    private void setStateAndAddToSolution(Field field, Field.State fieldState) {
-        FieldIndex index = solvedMatchField.getIndexOfField(field);
+    private void setStateAndAddToSolution(final Field field, final Field.State fieldState) {
+        final FieldIndex index = solvedMatchField.getIndexOfField(field);
         if (alreadySolvedFieldIndexes.contains(index)) {
             return;
         }
@@ -178,7 +178,7 @@ public class YajisanKazusanSolver {
         alreadySolvedFieldIndexes.add(index);
         //Wenn State schwarz alle Nachbarn weiß setzen
         if (fieldState == Field.State.BLACK) {
-            for (Field actNeighbourField : solvedMatchField.getAllNeighbours(field)) {
+            for (final Field actNeighbourField : solvedMatchField.getAllNeighbours(field)) {
                 if (actNeighbourField != null && actNeighbourField.getFieldState() == Field.State.UNKNOWN) {
                     setStateAndAddToSolution(actNeighbourField, Field.State.WHITE);
                 }

@@ -12,31 +12,32 @@ public class JSONMatchFieldParser implements MatchFieldParser {
     private final String filePathMatchFieldFile;
     private final JSONMatchFieldParser.ParsingResult parsingResult;
 
-    public JSONMatchFieldParser(String filePathMatchFieldFile) {
+    public JSONMatchFieldParser(final String filePathMatchFieldFile) {
         this.filePathMatchFieldFile = filePathMatchFieldFile;
         parsingResult = parseFile();
     }
 
     private JSONMatchFieldParser.ParsingResult parseFile() {
-        final ObjectMapper mapper = new ObjectMapper();
-        MatchField matchField;
-        File fieldFile = new File(filePathMatchFieldFile);
+        final File fieldFile = new File(filePathMatchFieldFile);
         if (!fieldFile.exists() || !fieldFile.isFile()) {
             return new ParsingResult(null, ParsingValidationResult.FILE_LOADING_ERROR);
         }
+        MatchField matchField;
         try {
-
-            matchField = mapper.readValue(new File(filePathMatchFieldFile), MatchField.class);
+            final ObjectMapper mapper = new ObjectMapper();
+            matchField = mapper.readValue(fieldFile, MatchField.class);
         } catch (IOException ie) {
             return new ParsingResult(null, ParsingValidationResult.FILE_NOT_VALID);
         }
         return new ParsingResult(matchField, ParsingValidationResult.PARSED_SUCCESSFUL);
     }
 
+    @Override
     public Optional<MatchField> getMatchFieldOfParsedFile() {
         return Optional.ofNullable(parsingResult.matchField);
     }
 
+    @Override
     public ParsingValidationResult getParsingValidationResult() {
         return parsingResult.parsingValidationResult;
     }
@@ -45,7 +46,7 @@ public class JSONMatchFieldParser implements MatchFieldParser {
         private final MatchField matchField;
         private final MatchFieldParser.ParsingValidationResult parsingValidationResult;
 
-        private ParsingResult(MatchField matchField, MatchFieldParser.ParsingValidationResult parsingValidation) {
+        private ParsingResult(final MatchField matchField, final MatchFieldParser.ParsingValidationResult parsingValidation) {
             this.matchField = matchField;
             this.parsingValidationResult = parsingValidation;
         }

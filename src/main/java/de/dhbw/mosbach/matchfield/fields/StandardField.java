@@ -18,7 +18,7 @@ public class StandardField extends AbstractField {
 
     @Override
     public Field deepCopy() {
-        StandardField copy = new StandardField();
+        final StandardField copy = new StandardField();
         copy.setFieldState(this.fieldState);
         return copy;
     }
@@ -29,9 +29,9 @@ public class StandardField extends AbstractField {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (obj instanceof StandardField) {
-            StandardField standardField = (StandardField) obj;
+            final StandardField standardField = (StandardField) obj;
             return super.fieldState == standardField.fieldState;
         }
         return false;

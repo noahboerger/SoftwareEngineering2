@@ -12,7 +12,7 @@ public class HintField extends AbstractField {
     private final int amount;
 
     @JsonCreator
-    public HintField(@JsonProperty("arrowDirection") Direction arrowDirection, @JsonProperty("amount") int amount) {
+    public HintField(@JsonProperty("arrowDirection") final Direction arrowDirection, @JsonProperty("amount") final int amount) {
         super();
         this.arrowDirection = arrowDirection;
         this.amount = amount;
@@ -33,16 +33,19 @@ public class HintField extends AbstractField {
 
     @Override
     public Field deepCopy() {
-        HintField copy = new HintField(this.arrowDirection, this.amount);
+        final HintField copy = new HintField(this.arrowDirection, this.amount);
         copy.setFieldState(this.fieldState);
         return copy;
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        HintField hintField = (HintField) o;
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        } else if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final HintField hintField = (HintField) o;
         return amount == hintField.amount &&
                 arrowDirection == hintField.arrowDirection &&
                 fieldState == hintField.fieldState;

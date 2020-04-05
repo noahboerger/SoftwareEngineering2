@@ -16,7 +16,7 @@ public interface MatchFieldParser {
         FILE_NOT_VALID("Die Datei beinhaltet kein valides Spielfeld!"),
         PARSED_SUCCESSFUL("Datei wurde erfolgreich geparsed.");
 
-        private String errorMessage;
+        private final String errorMessage;
 
         ParsingValidationResult(String errorMessage) {
             this.errorMessage = errorMessage;

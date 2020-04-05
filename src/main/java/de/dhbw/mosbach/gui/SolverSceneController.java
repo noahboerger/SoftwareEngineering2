@@ -27,7 +27,7 @@ import java.util.Objects;
 
 public class SolverSceneController {
 
-    private final int gameSize = 500;
+    private final static int gameSize = 500;
 
     @FXML
     private MenuBar menuBar;
@@ -47,7 +47,7 @@ public class SolverSceneController {
 
     private int actStep;
 
-    public void init(YajisanKazusanSolver solver) {
+    public void init(final YajisanKazusanSolver solver) {
         this.solver = solver;
         this.actShowingMatchField = solver.getUnsolvedMatchField();
         actStep = 0;
@@ -55,7 +55,7 @@ public class SolverSceneController {
     }
 
     @FXML
-    public void handleBackToMenu() throws IOException {
+    public void handleBackToMenu() {
         doBackToMenu();
     }
 
@@ -76,10 +76,10 @@ public class SolverSceneController {
 
     @FXML
     public void handleHelp() {
-        Alert manualAlert = new Alert(Alert.AlertType.INFORMATION);
+        final Alert manualAlert = new Alert(Alert.AlertType.INFORMATION);
         manualAlert.setTitle("Nutzungsinformationen");
         manualAlert.setHeaderText("Anleitung zur Bedienung des Yajisan-Kazusan-Lösers");
-        String userManual =
+        final String userManual =
                 "Dieses Programm kann das Yajisan-Kazusan Rätsel lösen.\n" +
                         "Du kannst einen Schritt weitergehen: (F5)\n" +
                         "Das ganze Spiel direkt lösen: (F6)\n" +
@@ -91,7 +91,7 @@ public class SolverSceneController {
     }
 
     @FXML
-    public void onKeyboardPress(KeyEvent event) {
+    public void onKeyboardPress(final KeyEvent event) {
         if (event.getCode() == KeyCode.F5) {
             doStep();
         } else if (event.getCode() == KeyCode.F6) {
@@ -99,17 +99,12 @@ public class SolverSceneController {
         } else if (event.getCode() == KeyCode.F7) {
             doStepBack();
         } else if (event.getCode() == KeyCode.F8) {
-            try {
-                doBackToMenu();
-            } catch (IOException ie) {
-                ie.printStackTrace();
-                System.exit(1);
-            }
+            doBackToMenu();
         }
     }
 
     private void initView() {
-        int frameSize = 5;
+        final int frameSize = 5;
         boardPane.setPrefSize(getFieldPaneSize() * actShowingMatchField.getEdgeSize() + 2 * frameSize, getFieldPaneSize() * actShowingMatchField.getEdgeSize() + 2 * frameSize);
         boardPane.setStyle("-fx-border-width: " + frameSize);
 
@@ -117,7 +112,7 @@ public class SolverSceneController {
         for (int x = 0; x < actShowingMatchField.getEdgeSize(); x++) {
             fieldsMap.put(x, new HashMap<>());
             for (int y = 0; y < actShowingMatchField.getEdgeSize(); y++) {
-                StackPane cell = new StackPane();
+                final StackPane cell = new StackPane();
                 cell.setPrefSize(getFieldPaneSize(), getFieldPaneSize());
                 cell.setLayoutX(frameSize + x * getFieldPaneSize());
                 cell.setLayoutY(frameSize + y * getFieldPaneSize());
@@ -131,10 +126,10 @@ public class SolverSceneController {
     }
 
     private void updateView() {
-        for (int x : fieldsMap.keySet()) {
-            for (int y : fieldsMap.get(x).keySet()) {
-                Field cellField = actShowingMatchField.getFieldAt(x, y);
-                StackPane cell = fieldsMap.get(x).get(y);
+        for (final int x : fieldsMap.keySet()) {
+            for (final int y : fieldsMap.get(x).keySet()) {
+                final Field cellField = actShowingMatchField.getFieldAt(x, y);
+                final StackPane cell = fieldsMap.get(x).get(y);
 
                 cell.getStyleClass().clear();
                 cell.getStyleClass().add("FIELD");
@@ -143,10 +138,10 @@ public class SolverSceneController {
                 if (cellField instanceof HintField) {
                     cell.getChildren().clear();
 
-                    HintField hintField = (HintField) cellField;
-                    Label amountLabel = new Label(hintField.getAmount() + " " + hintField.getArrowDirection().toCharacter());
+                    final HintField hintField = (HintField) cellField;
+                    final Label amountLabel = new Label(hintField.getAmount() + " " + hintField.getArrowDirection().toCharacter());
 
-                    int fontSize = gameSize / (actShowingMatchField.getEdgeSize() * 3);
+                    final int fontSize = gameSize / (actShowingMatchField.getEdgeSize() * 3);
                     amountLabel.setFont(new Font(fontSize));
 
                     if (hintField.getFieldState() == Field.State.BLACK) {
@@ -158,7 +153,7 @@ public class SolverSceneController {
         }
     }
 
-    public boolean calculateSolutionIfNotDone(boolean fullSolution) {
+    public boolean calculateSolutionIfNotDone(final boolean fullSolution) {
         if (solution == null || solvedMatchField == null) {
             final LoadingDialog loadingDialog = new LoadingDialog(menuBar.getScene().getWindow(), "Spielfeld wird gelöst...");
 
@@ -187,7 +182,7 @@ public class SolverSceneController {
             return;
         }
         if (actStep < actShowingMatchField.getEdgeSize() * actShowingMatchField.getEdgeSize()) {
-            Field.State correctFieldState = solvedMatchField.getFieldAt(solution.get(actStep).getX(), solution.get(actStep).getY()).getFieldState();
+            final Field.State correctFieldState = solvedMatchField.getFieldAt(solution.get(actStep).getX(), solution.get(actStep).getY()).getFieldState();
             actShowingMatchField.getFieldAt(solution.get(actStep).getX(), solution.get(actStep).getY()).setFieldState(correctFieldState);
             actStep++;
         } else {
@@ -211,8 +206,8 @@ public class SolverSceneController {
             return;
         }
         if (actStep < actShowingMatchField.getEdgeSize() * actShowingMatchField.getEdgeSize()) {
-            for (FieldIndex fieldIndex : solution) {
-                Field.State correctFieldState = solvedMatchField.getFieldAt(fieldIndex.getX(), fieldIndex.getY()).getFieldState();
+            for (final FieldIndex fieldIndex : solution) {
+                final Field.State correctFieldState = solvedMatchField.getFieldAt(fieldIndex.getX(), fieldIndex.getY()).getFieldState();
                 actShowingMatchField.getFieldAt(fieldIndex.getX(), fieldIndex.getY()).setFieldState(correctFieldState);
             }
             actStep = actShowingMatchField.getEdgeSize() * actShowingMatchField.getEdgeSize();
@@ -222,16 +217,21 @@ public class SolverSceneController {
         updateView();
     }
 
-    private void doBackToMenu() throws IOException {
-        Stage activeStage = (Stage) menuBar.getScene().getWindow();
-        Parent menu = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("fxml/MenuScene.fxml")));
-        Scene menuScene = new Scene(menu);
+    private void doBackToMenu() {
+        final Stage activeStage = (Stage) menuBar.getScene().getWindow();
+        Parent menu = null;
+        try {
+            menu = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("fxml/MenuScene.fxml")));
+        } catch (IOException e) {
+            System.exit(1);
+        }
+        final Scene menuScene = new Scene(menu);
         menuScene.getStylesheets().add(Objects.requireNonNull(getClass().getClassLoader().getResource("css/style.css")).toExternalForm());
         activeStage.setScene(menuScene);
     }
 
-    private void showWarningDialog(String message) {
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+    private void showWarningDialog(final String message) {
+        final Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle("Warnung!");
         alert.setHeaderText(null);
         alert.setContentText(message);

@@ -18,7 +18,7 @@ abstract class AbstractField implements Field {
 
     @Override
     @JsonIgnore
-    public void setFieldState(State fieldState) {
+    public void setFieldState(final State fieldState) {
         this.fieldState = fieldState;
     }
 

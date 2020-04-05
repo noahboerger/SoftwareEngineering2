@@ -26,23 +26,23 @@ public class LoadingDialog {
     private final ProgressIndicator progressIndicator = new ProgressIndicator(ProgressIndicator.INDETERMINATE_PROGRESS);
     private final Stage dialogStage = new Stage(StageStyle.UNDECORATED);
 
-    public ObservableList<Void> resultNotificationList = FXCollections.observableArrayList();
+    public final ObservableList<Void> resultNotificationList = FXCollections.observableArrayList();
 
-    public LoadingDialog(Window owner, String text) {
+    public LoadingDialog(final Window owner, final String text) {
         dialogStage.initModality(Modality.WINDOW_MODAL);
         dialogStage.initOwner(owner);
         dialogStage.setResizable(false);
         this.text = text;
     }
 
-    public void addTaskEndNotification(Runnable notify) {
+    public void addTaskEndNotification(final Runnable notify) {
         resultNotificationList.addListener((ListChangeListener<Void>) n -> {
             resultNotificationList.clear();
             notify.run();
         });
     }
 
-    public void executeRunnable(Runnable func) {
+    public void executeRunnable(final Runnable func) {
         setupDialog();
         runRunnable(func);
     }
@@ -63,15 +63,15 @@ public class LoadingDialog {
         dialogStage.show();
     }
 
-    private void runRunnable(Runnable task) {
-        Task<Void> executionTask = new Task<>() {
+    private void runRunnable(final Runnable task) {
+        final Task<Void> executionTask = new Task<>() {
             @Override
             public Void call() {
                 task.run();
                 return null;
             }
         };
-        EventHandler<WorkerStateEvent> notifyListeners = event -> {
+        final EventHandler<WorkerStateEvent> notifyListeners = event -> {
             progressIndicator.progressProperty().unbind();
             dialogStage.close();
             try {

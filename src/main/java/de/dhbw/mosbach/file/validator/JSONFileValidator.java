@@ -8,16 +8,20 @@ public class JSONFileValidator implements FileValidator {
     private final ValidationResult validationResult;
 
 
-    public JSONFileValidator(String filePathMatchFieldFile) {
+    public JSONFileValidator(final String filePathMatchFieldFile) {
         this.filePathMatchFieldFile = filePathMatchFieldFile;
         this.matchFieldFile = new File(filePathMatchFieldFile);
         this.validationResult = analyzeFile();
     }
 
     private ValidationResult analyzeFile() {
-        if (filePathMatchFieldFile == null || filePathMatchFieldFile.isBlank()) return ValidationResult.FILE_PATH_EMPTY;
-        if (fileNotExisting()) return ValidationResult.FILE_NOT_EXISTING;
-        if (fileIsNoJSON()) return ValidationResult.FILE_IS_NOT_A_JSON;
+        if (filePathMatchFieldFile == null || filePathMatchFieldFile.isBlank()) {
+            return ValidationResult.FILE_PATH_EMPTY;
+        } else if (fileNotExisting()) {
+            return ValidationResult.FILE_NOT_EXISTING;
+        } else if (fileIsNoJSON()) {
+            return ValidationResult.FILE_IS_NOT_A_JSON;
+        }
         return ValidationResult.VALID_FILE;
     }
 
@@ -26,9 +30,10 @@ public class JSONFileValidator implements FileValidator {
     }
 
     private boolean fileIsNoJSON() {
-        return !matchFieldFile.isFile() || !matchFieldFile.getName().toLowerCase().endsWith(".json");
+        return !matchFieldFile.isFile() || !matchFieldFile.getName().toUpperCase().endsWith(".JSON");
     }
 
+    @Override
     public ValidationResult getValidationResult() {
         return validationResult;
     }

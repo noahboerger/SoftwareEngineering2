@@ -11,7 +11,7 @@ public interface FileValidator {
         FILE_IS_NOT_A_JSON("Ausgewählte Dateityp kann nicht gelesen werden!"),
         VALID_FILE("Datei ist valide.");
 
-        private String errorMessage;
+        private final String errorMessage;
 
         ValidationResult(String errorMessage) {
             this.errorMessage = errorMessage;

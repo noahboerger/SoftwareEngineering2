@@ -17,14 +17,14 @@ final class SolverUtils {
     }
 
     //Gibt zurück ob ein Feld nicht mehr lösbar ist (z.B. aufgrund falsch geratener Felder)
-    static boolean isDefinitelyUnableToBeSolvedAnyMore(MatchField matchField) {
+    static boolean isDefinitelyUnableToBeSolvedAnyMore(final MatchField matchField) {
         return !canOrIsEveryWhiteHintFieldStillGetCorrect(matchField) ||
                 !canOrAreWhiteFieldsStillBeConnected(matchField) ||
                 !areNoBlackFieldsConnected(matchField);
     }
 
     //Prüft ob das Feld bereits korrekt gelöst wurde
-    static boolean isSolvedCorrectly(MatchField matchField) {
+    static boolean isSolvedCorrectly(final MatchField matchField) {
         return !(matchField.getFieldsWithState(Field.State.UNKNOWN).size() != 0 ||
                 !canOrAreWhiteFieldsStillBeConnected(matchField) ||
                 !canOrIsEveryWhiteHintFieldStillGetCorrect(matchField) ||
@@ -32,10 +32,10 @@ final class SolverUtils {
     }
 
     //Berechnet wie viele Schwarze Felder sich ab einem Feld in eine spezifische Richtung befeinden (ohne das Feld selbst)
-    static int calculateAlreadySetBlackFieldsToDirection(MatchField matchField, Field field, Direction rowDirection) {
-        List<Field> rowOrColumn = matchField.getFieldsToDirection(field, rowDirection);
+    static int calculateAlreadySetBlackFieldsToDirection(final MatchField matchField, final Field field, final Direction rowDirection) {
+        final List<Field> rowOrColumn = matchField.getFieldsToDirection(field, rowDirection);
         int counter = 0;
-        for (Field actField : rowOrColumn) {
+        for (final Field actField : rowOrColumn) {
             if (actField.getFieldState() == Field.State.BLACK) {
                 counter++;
             }
@@ -44,13 +44,13 @@ final class SolverUtils {
     }
 
     //Berechnet wie viele Schwarze Felder maximal ab einem Feld in eine spezifische Richtung gesetzt werden können (ohne das Feld selbst)
-    static int calculateMaxPossibleBlackFieldsToDirection(MatchField matchField, Field field, Direction rowDirection) {
-        List<Field> rowOrColumn = matchField.getFieldsToDirection(field, rowDirection);
+    static int calculateMaxPossibleBlackFieldsToDirection(final MatchField matchField, final Field field, final Direction rowDirection) {
+        final List<Field> rowOrColumn = matchField.getFieldsToDirection(field, rowDirection);
 
         int counter = 0;
         boolean beforePotentialBlackField = false;
 
-        for (Field actField : rowOrColumn) {
+        for (final Field actField : rowOrColumn) {
             switch (actField.getFieldState()) {
                 case WHITE:
                     beforePotentialBlackField = false;
@@ -68,16 +68,17 @@ final class SolverUtils {
                         counter++;
                     }
                     beforePotentialBlackField = potentialBlackField;
+                    break;
             }
         }
         return counter;
     }
 
     //Überprüft ob ein feld noch geschwärzt werden darf (keine geschwärzten Nachbaren)
-    private static boolean isAbleToBeBlack(MatchField matchField, Field field) {
+    private static boolean isAbleToBeBlack(final MatchField matchField, final Field field) {
         boolean potentialBlackField = true;
-        for (Direction allDirections : Direction.values()) {
-            Field actNeighbourField = matchField.getNeighbourTo(field, allDirections);
+        for (final Direction allDirections : Direction.values()) {
+            final Field actNeighbourField = matchField.getNeighbourTo(field, allDirections);
             if (actNeighbourField == null) {
                 continue;
             }
@@ -90,11 +91,11 @@ final class SolverUtils {
     }
 
     //Überprüft ob die Hinweise von weißen Hinweißfeldern Feldern noch erfüllt werden können
-    static boolean canOrIsEveryWhiteHintFieldStillGetCorrect(MatchField matchField) {
-        for (List<Field> fields : matchField.getAllFields()) {
-            for (Field actField : fields) {
+    static boolean canOrIsEveryWhiteHintFieldStillGetCorrect(final MatchField matchField) {
+        for (final List<Field> fields : matchField.getAllFields()) {
+            for (final Field actField : fields) {
                 if (actField instanceof HintField && actField.getFieldState() == Field.State.WHITE) {
-                    HintField actHintField = (HintField) actField;
+                    final HintField actHintField = (HintField) actField;
                     if (calculateMaxPossibleBlackFieldsToDirection(matchField, actHintField, actHintField.getArrowDirection()) < actHintField.getAmount() || calculateAlreadySetBlackFieldsToDirection(matchField, actHintField, actHintField.getArrowDirection()) > actHintField.getAmount()) {
                         return false;
                     }
@@ -105,11 +106,11 @@ final class SolverUtils {
     }
 
     //Überprüft ob keine schwarzen Felder illegal miteinander verbunden sind
-    static boolean areNoBlackFieldsConnected(MatchField matchField) {
-        for (List<Field> fields : matchField.getAllFields()) {
-            for (Field actField : fields) {
+    static boolean areNoBlackFieldsConnected(final MatchField matchField) {
+        for (final List<Field> fields : matchField.getAllFields()) {
+            for (final Field actField : fields) {
                 if (actField.getFieldState() == Field.State.BLACK) {
-                    for (Field neighbourField : matchField.getAllNeighbours(actField)) {
+                    for (final Field neighbourField : matchField.getAllNeighbours(actField)) {
                         if (neighbourField.getFieldState() == Field.State.BLACK) {
                             return false;
                         }
@@ -121,20 +122,20 @@ final class SolverUtils {
     }
 
     //Überprüft ob die weißen und ungesetzten Felder noch verbunden alle verbunden sind
-    static boolean canOrAreWhiteFieldsStillBeConnected(MatchField matchField) {
-        Field firstWhiteField = findFirstFieldWithState(matchField, Field.State.WHITE);
+    static boolean canOrAreWhiteFieldsStillBeConnected(final MatchField matchField) {
+        final Field firstWhiteField = findFirstFieldWithState(matchField, Field.State.WHITE);
         if (firstWhiteField == null) {
             return true;
         }
-        FieldIndex indexOfFirstField = matchField.getIndexOfField(firstWhiteField);
-        Set<FieldIndex> foundFields = new HashSet<>();
-        List<FieldIndex> toBeProcessedFields = new ArrayList<>();
+        final FieldIndex indexOfFirstField = matchField.getIndexOfField(firstWhiteField);
+        final Set<FieldIndex> foundFields = new HashSet<>();
+        final List<FieldIndex> toBeProcessedFields = new ArrayList<>();
         foundFields.add(indexOfFirstField);
         toBeProcessedFields.add(indexOfFirstField);
 
         while (!toBeProcessedFields.isEmpty()) {
-            Field actField = matchField.getFieldAt(toBeProcessedFields.remove(0));
-            List<FieldIndex> unprocessedFieldIndexes = matchField.getAllNeighbours(actField).stream()
+            final Field actField = matchField.getFieldAt(toBeProcessedFields.remove(0));
+            final List<FieldIndex> unprocessedFieldIndexes = matchField.getAllNeighbours(actField).stream()
                     .filter(field -> field.getFieldState() != Field.State.BLACK)
                     .map(matchField::getIndexOfField)
                     .filter(field -> !foundFields.contains(field))
@@ -146,7 +147,7 @@ final class SolverUtils {
     }
 
     //Gibt das erste gefundene Felde mit angegebenem Status oder null zurück
-    static Field findFirstFieldWithState(MatchField matchField, Field.State fieldState) {
+    static Field findFirstFieldWithState(final MatchField matchField, final Field.State fieldState) {
         return matchField.getAllFields().stream()
                 .flatMap(Collection::stream)
                 .filter(field -> field.getFieldState() == fieldState)
@@ -154,23 +155,23 @@ final class SolverUtils {
     }
 
     //Weißes Hintfield -> Hint nutzen, wenn möglich, gibt zu schwärzende und weiße Felder zurück
-    static BlackAndWhiteSolutionDTO getBlackAndWhiteUseHint(MatchField matchField, HintField hintField) {
-        Field startField = matchField.getNeighbourTo(hintField, hintField.getArrowDirection());
-        final int alreadyBlackInRow = countFieldsToDirectionWithStateBlack(matchField, hintField, hintField.getArrowDirection());
+    static BlackAndWhiteSolutionDTO getBlackAndWhiteUseHint(final MatchField matchField, final HintField hintField) {
+        final Field startField = matchField.getNeighbourTo(hintField, hintField.getArrowDirection());
 
         //Wenn Nachbar direkt außerhalb, ist die einzige Lösung nichts zu markieren
         if (startField == null) {
             return new BlackAndWhiteSolutionDTO();
         }
 
-        BlackAndWhiteSolutionDTO potentialCorrectSolution = null;
-        List<BlackAndWhiteSolutionDTO> solutionDTOList = getListOfPossibleSolutions(matchField, startField, hintField.getArrowDirection());
+        final List<BlackAndWhiteSolutionDTO> solutionDTOList = getListOfPossibleSolutions(matchField, startField, hintField.getArrowDirection());
         if (solutionDTOList.isEmpty()) {
             return null;
         }
-        Stack<Field> blacks = solutionDTOList.get(0).toBeBlackedFields;
-        Stack<Field> white = solutionDTOList.get(0).toBeWhitedFields;
-        for (BlackAndWhiteSolutionDTO actSolution : solutionDTOList) {
+        final Stack<Field> blacks = solutionDTOList.get(0).toBeBlackedFields;
+        final Stack<Field> white = solutionDTOList.get(0).toBeWhitedFields;
+        final int alreadyBlackInRow = countFieldsToDirectionWithStateBlack(matchField, hintField, hintField.getArrowDirection());
+        BlackAndWhiteSolutionDTO potentialCorrectSolution = null;
+        for (final BlackAndWhiteSolutionDTO actSolution : solutionDTOList) {
             if (actSolution.toBeBlackedFields.size() + alreadyBlackInRow == hintField.getAmount()) {
                 if (potentialCorrectSolution == null) {
                     potentialCorrectSolution = actSolution;
@@ -185,15 +186,13 @@ final class SolverUtils {
     }
 
     //Berechnet alle noch möglichen Lösungen für eine Reihe inklusive des aktuellen Feldes (Hilfsmethode für getBlackAndWhiteUseHint und zum "Raten")
-    static List<BlackAndWhiteSolutionDTO> getListOfPossibleSolutions(MatchField matchField, Field actField, Direction direction) {
-        List<Field> upcomingFields = matchField.getFieldsToDirection(actField, direction);
-        List<BlackAndWhiteSolutionDTO> solutionsList = new ArrayList<>();
-
+    static List<BlackAndWhiteSolutionDTO> getListOfPossibleSolutions(final MatchField matchField, final Field actField, final Direction direction) {
         //Wenn direkt außerhalb, Lösung ist nur nichts zu markieren
         if (actField == null) {
             return Collections.singletonList(new BlackAndWhiteSolutionDTO());
         }
-
+        final List<Field> upcomingFields = matchField.getFieldsToDirection(actField, direction);
+        final List<BlackAndWhiteSolutionDTO> solutionsList = new ArrayList<>();
         //Einfachster Fall, ein Feld übrig
         if (upcomingFields.isEmpty()) {
             //Farbe schon bekannt, leere Lösung zurückgeben
@@ -202,31 +201,31 @@ final class SolverUtils {
             } else {
                 //Farbe noch nicht bekannt
                 if (isAbleToBeBlack(matchField, actField)) {
-                    Stack<Field> blackStack = new Stack<>();
+                    final Stack<Field> blackStack = new Stack<>();
                     blackStack.add(actField);
                     solutionsList.add(new BlackAndWhiteSolutionDTO(blackStack, new Stack<>()));
                 }
-                Stack<Field> whiteStack = new Stack<>();
+                final Stack<Field> whiteStack = new Stack<>();
                 whiteStack.add(actField);
                 solutionsList.add(new BlackAndWhiteSolutionDTO(new Stack<>(), whiteStack));
             }
         } else {
             //Mehrere Felder übrig
-            List<BlackAndWhiteSolutionDTO> subProblemSolutionsList = getListOfPossibleSolutions(matchField, upcomingFields.get(0), direction);
+            final List<BlackAndWhiteSolutionDTO> subProblemSolutionsList = getListOfPossibleSolutions(matchField, upcomingFields.get(0), direction);
             //Farbe schon bekannt, vorherige Lösungen zurückgeben
             if (actField.getFieldState() != Field.State.UNKNOWN) {
                 return subProblemSolutionsList;
             } else {
                 //Farbe noch nicht bekannt
                 if (isAbleToBeBlack(matchField, actField)) {
-                    for (BlackAndWhiteSolutionDTO subSolutions : subProblemSolutionsList) {
-                        BlackAndWhiteSolutionDTO copySolution = BlackAndWhiteSolutionDTO.copyOf(subSolutions);
+                    for (final BlackAndWhiteSolutionDTO subSolutions : subProblemSolutionsList) {
+                        final BlackAndWhiteSolutionDTO copySolution = BlackAndWhiteSolutionDTO.copyOf(subSolutions);
                         copySolution.toBeBlackedFields.push(actField);
                         solutionsList.add(copySolution);
                     }
                 }
-                for (BlackAndWhiteSolutionDTO subSolutions : subProblemSolutionsList) {
-                    BlackAndWhiteSolutionDTO copySolution = BlackAndWhiteSolutionDTO.copyOf(subSolutions);
+                for (final BlackAndWhiteSolutionDTO subSolutions : subProblemSolutionsList) {
+                    final BlackAndWhiteSolutionDTO copySolution = BlackAndWhiteSolutionDTO.copyOf(subSolutions);
                     copySolution.toBeWhitedFields.push(actField);
                     solutionsList.add(copySolution);
                 }
@@ -236,29 +235,29 @@ final class SolverUtils {
     }
 
     //Zählt Felder mit angegebenem Status ab dem angegebenen Feld (exklusiv) in die angegebene Richtung
-    static int countFieldsToDirectionWithStateBlack(MatchField matchField, Field field, Direction direction) {
+    static int countFieldsToDirectionWithStateBlack(final MatchField matchField, final Field field, final Direction direction) {
         return (int) matchField.getFieldsToDirection(field, direction).stream()
                 .filter(x -> x.getFieldState() == Field.State.BLACK).count();
     }
 
     //Methode zum möglichst richtigen Erratens eines schwarzen Feldes Hinweiß Feldes
-    static Field findPotentialBestBlackGuessHintField(MatchField matchField) {
-        List<HintField> unknownHintFields = matchField.getAllFields().stream()
+    static Field findPotentialBestBlackGuessHintField(final MatchField matchField) {
+        final List<HintField> unknownHintFields = matchField.getAllFields().stream()
                 .flatMap(Collection::stream)
                 .filter(field -> field.getFieldState() == Field.State.UNKNOWN)
                 .filter(field -> field instanceof HintField)
                 .map(field -> (HintField) field)
                 .collect(Collectors.toList());
 
-        Map<HintField, Integer> possibleHintSolutions = new HashMap<>();
-        for (HintField actHintField : unknownHintFields) {
-            Field startNeighbourField = matchField.getNeighbourTo(actHintField, actHintField.getArrowDirection());
+        final Map<HintField, Integer> possibleHintSolutions = new HashMap<>();
+        for (final HintField actHintField : unknownHintFields) {
+            final Field startNeighbourField = matchField.getNeighbourTo(actHintField, actHintField.getArrowDirection());
             //Bei keinem Feld lässt sich keine Aussage treffen, deshalb setzten eines unerreichbaren Wertes
             if (startNeighbourField == null) {
                 possibleHintSolutions.put(actHintField, Integer.MAX_VALUE);
                 continue;
             }
-            List<BlackAndWhiteSolutionDTO> allSolutions = getListOfPossibleSolutions(matchField, startNeighbourField, actHintField.getArrowDirection());
+            final List<BlackAndWhiteSolutionDTO> allSolutions = getListOfPossibleSolutions(matchField, startNeighbourField, actHintField.getArrowDirection());
             final int alreadyBlackInRow = countFieldsToDirectionWithStateBlack(matchField, actHintField, actHintField.getArrowDirection());
 
             final int correctSolutions = (int) allSolutions.stream()
@@ -271,29 +270,29 @@ final class SolverUtils {
     }
 
     //Methode zum möglichst richtigen Erraten eines schwarzen Standard Feldes
-    static Field findPotentialBestBlackGuessStandardField(MatchField matchField) {
-        List<StandardField> unknownStandardFields = matchField.getAllFields().stream()
+    static Field findPotentialBestBlackGuessStandardField(final MatchField matchField) {
+        final List<StandardField> unknownStandardFields = matchField.getAllFields().stream()
                 .flatMap(Collection::stream)
                 .filter(field -> field.getFieldState() == Field.State.UNKNOWN)
                 .filter(field -> field instanceof StandardField)
                 .map(field -> (StandardField) field)
                 .collect(Collectors.toList());
 
-        Map<StandardField, Double> probability = new HashMap<>();
+        final Map<StandardField, Double> probability = new HashMap<>();
 
-        for (StandardField actField : unknownStandardFields) {
+        for (final StandardField actField : unknownStandardFields) {
             probability.put(actField, 0.0);
-            for (Direction allDirections : Direction.values()) {
-                for (Field actFieldInRowOrColumn : matchField.getFieldsToDirection(actField, allDirections)) {
+            for (final Direction allDirections : Direction.values()) {
+                for (final Field actFieldInRowOrColumn : matchField.getFieldsToDirection(actField, allDirections)) {
                     if (!(actFieldInRowOrColumn instanceof HintField)) {
                         continue;
                     }
-                    HintField actHintFieldInRowOrColumn = (HintField) actFieldInRowOrColumn;
+                    final HintField actHintFieldInRowOrColumn = (HintField) actFieldInRowOrColumn;
                     if (actHintFieldInRowOrColumn.getArrowDirection() != allDirections.getOppositeDirection()) {
                         continue;
                     }
-                    List<BlackAndWhiteSolutionDTO> solutions = getListOfPossibleSolutions(matchField, matchField.getNeighbourTo(actHintFieldInRowOrColumn, actHintFieldInRowOrColumn.getArrowDirection()), actHintFieldInRowOrColumn.getArrowDirection());
-                    int numberOfWithActFieldBlack = (int) solutions.stream()
+                    final List<BlackAndWhiteSolutionDTO> solutions = getListOfPossibleSolutions(matchField, matchField.getNeighbourTo(actHintFieldInRowOrColumn, actHintFieldInRowOrColumn.getArrowDirection()), actHintFieldInRowOrColumn.getArrowDirection());
+                    final int numberOfWithActFieldBlack = (int) solutions.stream()
                             .filter(solution -> solution.toBeBlackedFields.contains(actField)).count();
                     double actPartSolution = (double) solutions.size() / (double) numberOfWithActFieldBlack;
                     if (actHintFieldInRowOrColumn.getFieldState() == Field.State.WHITE) {
@@ -308,10 +307,10 @@ final class SolverUtils {
 
     //Statische DTO-Klasse zum zurückgeben eines Stacks an zu schwärzenden und weißen Feldern
     static class BlackAndWhiteSolutionDTO {
-        Stack<Field> toBeBlackedFields;
-        Stack<Field> toBeWhitedFields;
+        final Stack<Field> toBeBlackedFields;
+        final Stack<Field> toBeWhitedFields;
 
-        private BlackAndWhiteSolutionDTO(Stack<Field> toBeBlackedFields, Stack<Field> toBeWhitedFields) {
+        private BlackAndWhiteSolutionDTO(final Stack<Field> toBeBlackedFields, final Stack<Field> toBeWhitedFields) {
             this.toBeBlackedFields = toBeBlackedFields;
             this.toBeWhitedFields = toBeWhitedFields;
         }
@@ -320,9 +319,9 @@ final class SolverUtils {
             this(new Stack<>(), new Stack<>());
         }
 
-        private static BlackAndWhiteSolutionDTO copyOf(BlackAndWhiteSolutionDTO solution) {
+        private static BlackAndWhiteSolutionDTO copyOf(final BlackAndWhiteSolutionDTO solution) {
             @SuppressWarnings("unchecked") //Typ-Sicher, da der Typ des geclonten Stacks dem des vorherigen entspricht
-                    BlackAndWhiteSolutionDTO copy = new BlackAndWhiteSolutionDTO((Stack<Field>) solution.toBeBlackedFields.clone(), (Stack<Field>) solution.toBeWhitedFields.clone());
+            final BlackAndWhiteSolutionDTO copy = new BlackAndWhiteSolutionDTO((Stack<Field>) solution.toBeBlackedFields.clone(), (Stack<Field>) solution.toBeWhitedFields.clone());
             return copy;
         }
     }
