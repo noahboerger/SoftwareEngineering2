@@ -87,11 +87,11 @@ public class YajisanKazusanSolver {
                 if (solution == null) {
                     continue;
                 }
-                for (final Field whiteField : solution.toBeWhitedFields) {
-                    setStateAndAddToSolution(whiteField, Field.State.WHITE);
+                for (final FieldIndex whiteFieldIndex : solution.toBeWhitedFields) {
+                    setStateAndAddToSolution(solvedMatchField.getFieldAt(whiteFieldIndex), Field.State.WHITE);
                 }
-                for (final Field blackField : solution.toBeBlackedFields) {
-                    setStateAndAddToSolution(blackField, Field.State.BLACK);
+                for (final FieldIndex blackFieldIndex : solution.toBeBlackedFields) {
+                    setStateAndAddToSolution(solvedMatchField.getFieldAt(blackFieldIndex), Field.State.BLACK);
                 }
             }
         }

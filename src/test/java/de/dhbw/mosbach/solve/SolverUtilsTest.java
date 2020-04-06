@@ -5,6 +5,7 @@ import de.dhbw.mosbach.matchfield.MatchField;
 import de.dhbw.mosbach.matchfield.fields.Field;
 import de.dhbw.mosbach.matchfield.fields.HintField;
 import de.dhbw.mosbach.matchfield.utils.Direction;
+import de.dhbw.mosbach.matchfield.utils.FieldIndex;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,15 +35,15 @@ public class SolverUtilsTest {
     @Test
     public void getListOfPossibleSolutionsTest() {
         List<SolverUtils.BlackAndWhiteSolutionDTO> potentialSolutions = SolverUtils.getListOfPossibleSolutions(testMatchField, testMatchField.getFieldAt(2, 0), Direction.RIGHT);
-        Assert.assertEquals(8, potentialSolutions.size());
+        Assert.assertEquals(5, potentialSolutions.size());
 
         testMatchField.getFieldAt(3, 0).setFieldState(Field.State.BLACK);
         List<SolverUtils.BlackAndWhiteSolutionDTO> potentialSolutionsWithBlackField = SolverUtils.getListOfPossibleSolutions(testMatchField, testMatchField.getFieldAt(2, 0), Direction.RIGHT);
         Assert.assertEquals(1, potentialSolutionsWithBlackField.size());
         Assert.assertEquals(2, potentialSolutionsWithBlackField.get(0).toBeWhitedFields.size());
         Assert.assertEquals(0, potentialSolutionsWithBlackField.get(0).toBeBlackedFields.size());
-        Assert.assertEquals(testMatchField.getFieldAt(2, 0), potentialSolutionsWithBlackField.get(0).toBeWhitedFields.pop());
-        Assert.assertEquals(testMatchField.getFieldAt(4, 0), potentialSolutionsWithBlackField.get(0).toBeWhitedFields.pop());
+        Assert.assertEquals(new FieldIndex(2, 0), potentialSolutionsWithBlackField.get(0).toBeWhitedFields.pop());
+        Assert.assertEquals(new FieldIndex(4, 0), potentialSolutionsWithBlackField.get(0).toBeWhitedFields.pop());
     }
 
     @Test
@@ -55,7 +56,7 @@ public class SolverUtilsTest {
         Assert.assertNotNull(potentialSolutionsWithBlackField);
         Assert.assertEquals(2, potentialSolutionsWithBlackField.toBeWhitedFields.size());
         Assert.assertEquals(1, potentialSolutionsWithBlackField.toBeBlackedFields.size());
-        Assert.assertEquals(testMatchField.getFieldAt(1, 0), potentialSolutionsWithBlackField.toBeBlackedFields.get(0));
+        Assert.assertEquals(new FieldIndex(1,0), potentialSolutionsWithBlackField.toBeBlackedFields.get(0));
     }
 
     @Test

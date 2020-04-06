@@ -173,8 +173,8 @@ final class SolverUtils {
         if (solutionDTOList.size() == 1) {
             return solutionDTOList.get(0);
         }
-        final Stack<Field> blacks = solutionDTOList.get(0).toBeBlackedFields;
-        final Stack<Field> white = solutionDTOList.get(0).toBeWhitedFields;
+        final Stack<FieldIndex> blacks = solutionDTOList.get(0).toBeBlackedFields;
+        final Stack<FieldIndex> white = solutionDTOList.get(0).toBeWhitedFields;
         for (final BlackAndWhiteSolutionDTO actSolution : solutionDTOList) {
             blacks.removeAll(actSolution.toBeWhitedFields);
             white.removeAll(actSolution.toBeBlackedFields);
@@ -203,12 +203,12 @@ final class SolverUtils {
             } else {
                 //Farbe noch nicht bekannt
                 if (isAbleToBeBlack(matchField, actField)) {
-                    final Stack<Field> blackStack = new Stack<>();
-                    blackStack.add(actField);
+                    final Stack<FieldIndex> blackStack = new Stack<>();
+                    blackStack.add(matchField.getIndexOfField(actField));
                     solutionsList.add(new BlackAndWhiteSolutionDTO(blackStack, new Stack<>()));
                 }
-                final Stack<Field> whiteStack = new Stack<>();
-                whiteStack.add(actField);
+                final Stack<FieldIndex> whiteStack = new Stack<>();
+                whiteStack.add(matchField.getIndexOfField(actField));
                 solutionsList.add(new BlackAndWhiteSolutionDTO(new Stack<>(), whiteStack));
             }
         } else {
@@ -221,14 +221,17 @@ final class SolverUtils {
                 //Farbe noch nicht bekannt
                 if (isAbleToBeBlack(matchField, actField)) {
                     for (final BlackAndWhiteSolutionDTO subSolutions : subProblemSolutionsList) {
+                        if(subSolutions.toBeBlackedFields.contains(matchField.getIndexOfField(matchField.getNeighbourTo(actField, direction)))) {
+                            continue;
+                        }
                         final BlackAndWhiteSolutionDTO copySolution = BlackAndWhiteSolutionDTO.copyOf(subSolutions);
-                        copySolution.toBeBlackedFields.push(actField);
+                        copySolution.toBeBlackedFields.push(matchField.getIndexOfField(actField));
                         solutionsList.add(copySolution);
                     }
                 }
                 for (final BlackAndWhiteSolutionDTO subSolutions : subProblemSolutionsList) {
                     final BlackAndWhiteSolutionDTO copySolution = BlackAndWhiteSolutionDTO.copyOf(subSolutions);
-                    copySolution.toBeWhitedFields.push(actField);
+                    copySolution.toBeWhitedFields.push(matchField.getIndexOfField(actField));
                     solutionsList.add(copySolution);
                 }
             }
@@ -295,7 +298,7 @@ final class SolverUtils {
                     }
                     final List<BlackAndWhiteSolutionDTO> solutions = getListOfPossibleSolutions(matchField, matchField.getNeighbourTo(actHintFieldInRowOrColumn, actHintFieldInRowOrColumn.getArrowDirection()), actHintFieldInRowOrColumn.getArrowDirection());
                     final int numberOfWithActFieldBlack = (int) solutions.stream()
-                            .filter(solution -> solution.toBeBlackedFields.contains(actField)).count();
+                            .filter(solution -> solution.toBeBlackedFields.contains(matchField.getIndexOfField(actField))).count();
                     double actPartSolution = (double) solutions.size() / (double) numberOfWithActFieldBlack;
                     if (actHintFieldInRowOrColumn.getFieldState() == Field.State.WHITE) {
                         actPartSolution *= 2; //Deutlich höhere Wahrscheinlichkeit, wenn Hint-Feld das Hinweis gibt schon weiß
@@ -309,10 +312,10 @@ final class SolverUtils {
 
     //Statische DTO-Klasse zum zurückgeben eines Stacks an zu schwärzenden und weißen Feldern
     static class BlackAndWhiteSolutionDTO {
-        final Stack<Field> toBeBlackedFields;
-        final Stack<Field> toBeWhitedFields;
+        final Stack<FieldIndex> toBeBlackedFields;
+        final Stack<FieldIndex> toBeWhitedFields;
 
-        private BlackAndWhiteSolutionDTO(final Stack<Field> toBeBlackedFields, final Stack<Field> toBeWhitedFields) {
+        private BlackAndWhiteSolutionDTO(final Stack<FieldIndex> toBeBlackedFields, final Stack<FieldIndex> toBeWhitedFields) {
             this.toBeBlackedFields = toBeBlackedFields;
             this.toBeWhitedFields = toBeWhitedFields;
         }
@@ -323,7 +326,7 @@ final class SolverUtils {
 
         private static BlackAndWhiteSolutionDTO copyOf(final BlackAndWhiteSolutionDTO solution) {
             @SuppressWarnings("unchecked") //Typ-Sicher, da der Typ des geclonten Stacks dem des vorherigen entspricht
-            final BlackAndWhiteSolutionDTO copy = new BlackAndWhiteSolutionDTO((Stack<Field>) solution.toBeBlackedFields.clone(), (Stack<Field>) solution.toBeWhitedFields.clone());
+            final BlackAndWhiteSolutionDTO copy = new BlackAndWhiteSolutionDTO((Stack<FieldIndex>) solution.toBeBlackedFields.clone(), (Stack<FieldIndex>) solution.toBeWhitedFields.clone());
             return copy;
         }
     }
