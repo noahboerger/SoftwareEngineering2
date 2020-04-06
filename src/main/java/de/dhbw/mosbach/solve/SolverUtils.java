@@ -163,26 +163,28 @@ final class SolverUtils {
             return new BlackAndWhiteSolutionDTO();
         }
 
-        final List<BlackAndWhiteSolutionDTO> solutionDTOList = getListOfPossibleSolutions(matchField, startField, hintField.getArrowDirection());
+        final int alreadyBlackInRow = countFieldsToDirectionWithStateBlack(matchField, hintField, hintField.getArrowDirection());
+        final List<BlackAndWhiteSolutionDTO> solutionDTOList = getListOfPossibleSolutions(matchField, startField, hintField.getArrowDirection()).stream()
+                .filter(x -> x.toBeBlackedFields.size() + alreadyBlackInRow == hintField.getAmount())
+                .collect(Collectors.toList());
         if (solutionDTOList.isEmpty()) {
             return null;
         }
+        if (solutionDTOList.size() == 1) {
+            return solutionDTOList.get(0);
+        }
         final Stack<Field> blacks = solutionDTOList.get(0).toBeBlackedFields;
         final Stack<Field> white = solutionDTOList.get(0).toBeWhitedFields;
-        final int alreadyBlackInRow = countFieldsToDirectionWithStateBlack(matchField, hintField, hintField.getArrowDirection());
-        BlackAndWhiteSolutionDTO potentialCorrectSolution = null;
         for (final BlackAndWhiteSolutionDTO actSolution : solutionDTOList) {
-            if (actSolution.toBeBlackedFields.size() + alreadyBlackInRow == hintField.getAmount()) {
-                if (potentialCorrectSolution == null) {
-                    potentialCorrectSolution = actSolution;
-                } else {
-                    return null;
-                }
-                blacks.removeAll(potentialCorrectSolution.toBeWhitedFields);
-                white.removeAll(potentialCorrectSolution.toBeBlackedFields);
-            }
+            blacks.removeAll(actSolution.toBeWhitedFields);
+            white.removeAll(actSolution.toBeBlackedFields);
+
         }
-        return Objects.requireNonNullElseGet(potentialCorrectSolution, () -> new BlackAndWhiteSolutionDTO(blacks, white));
+        if(blacks.isEmpty() && white.isEmpty()) {
+            return null;
+        }
+        return new BlackAndWhiteSolutionDTO(blacks, white
+        );
     }
 
     //Berechnet alle noch möglichen Lösungen für eine Reihe inklusive des aktuellen Feldes (Hilfsmethode für getBlackAndWhiteUseHint und zum "Raten")
