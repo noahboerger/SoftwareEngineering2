@@ -293,7 +293,8 @@ final class SolverUtils {
                         continue;
                     }
                     final HintField actHintFieldInRowOrColumn = (HintField) actFieldInRowOrColumn;
-                    if (actHintFieldInRowOrColumn.getArrowDirection() != allDirections.getOppositeDirection()) {
+                    //Wenn es in die falsche richtung zeigt oder schwarz ist, weiter da keine Informationen
+                    if (actHintFieldInRowOrColumn.getArrowDirection() != allDirections.getOppositeDirection() || actFieldInRowOrColumn.getFieldState() == Field.State.BLACK) {
                         continue;
                     }
                     final List<BlackAndWhiteSolutionDTO> solutions = getListOfPossibleSolutions(matchField, matchField.getNeighbourTo(actHintFieldInRowOrColumn, actHintFieldInRowOrColumn.getArrowDirection()), actHintFieldInRowOrColumn.getArrowDirection());
