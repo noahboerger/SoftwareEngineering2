@@ -180,7 +180,7 @@ final class SolverUtils {
             white.removeAll(actSolution.toBeBlackedFields);
 
         }
-        if(blacks.isEmpty() && white.isEmpty()) {
+        if (blacks.isEmpty() && white.isEmpty()) {
             return null;
         }
         return new BlackAndWhiteSolutionDTO(blacks, white
@@ -221,7 +221,7 @@ final class SolverUtils {
                 //Farbe noch nicht bekannt
                 if (isAbleToBeBlack(matchField, actField)) {
                     for (final BlackAndWhiteSolutionDTO subSolutions : subProblemSolutionsList) {
-                        if(subSolutions.toBeBlackedFields.contains(matchField.getIndexOfField(matchField.getNeighbourTo(actField, direction)))) {
+                        if (subSolutions.toBeBlackedFields.contains(matchField.getIndexOfField(matchField.getNeighbourTo(actField, direction)))) {
                             continue;
                         }
                         final BlackAndWhiteSolutionDTO copySolution = BlackAndWhiteSolutionDTO.copyOf(subSolutions);

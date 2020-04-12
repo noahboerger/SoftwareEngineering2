@@ -56,7 +56,7 @@ public class SolverUtilsTest {
         Assert.assertNotNull(potentialSolutionsWithBlackField);
         Assert.assertEquals(2, potentialSolutionsWithBlackField.toBeWhitedFields.size());
         Assert.assertEquals(1, potentialSolutionsWithBlackField.toBeBlackedFields.size());
-        Assert.assertEquals(new FieldIndex(1,0), potentialSolutionsWithBlackField.toBeBlackedFields.get(0));
+        Assert.assertEquals(new FieldIndex(1, 0), potentialSolutionsWithBlackField.toBeBlackedFields.get(0));
     }
 
     @Test

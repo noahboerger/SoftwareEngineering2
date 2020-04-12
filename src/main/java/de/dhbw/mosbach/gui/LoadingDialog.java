@@ -21,12 +21,10 @@ import javafx.stage.Window;
 
 public class LoadingDialog {
 
+    public final ObservableList<Void> resultNotificationList = FXCollections.observableArrayList();
     private final String text;
-
     private final ProgressIndicator progressIndicator = new ProgressIndicator(ProgressIndicator.INDETERMINATE_PROGRESS);
     private final Stage dialogStage = new Stage(StageStyle.UNDECORATED);
-
-    public final ObservableList<Void> resultNotificationList = FXCollections.observableArrayList();
 
     public LoadingDialog(final Window owner, final String text) {
         dialogStage.initModality(Modality.WINDOW_MODAL);

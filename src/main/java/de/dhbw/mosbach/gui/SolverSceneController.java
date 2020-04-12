@@ -27,7 +27,7 @@ import java.util.Objects;
 
 public class SolverSceneController {
 
-    private final static int gameSize = 500;
+    private final static int GAME_SIZE = 500;
 
     @FXML
     private MenuBar menuBar;
@@ -104,9 +104,9 @@ public class SolverSceneController {
     }
 
     private void initView() {
-        final int frameSize = 5;
-        boardPane.setPrefSize(getFieldPaneSize() * actShowingMatchField.getEdgeSize() + 2 * frameSize, getFieldPaneSize() * actShowingMatchField.getEdgeSize() + 2 * frameSize);
-        boardPane.setStyle("-fx-border-width: " + frameSize);
+        final int FRAME_SIZE = 5;
+        boardPane.setPrefSize(getFieldPaneSize() * actShowingMatchField.getEdgeSize() + 2 * FRAME_SIZE, getFieldPaneSize() * actShowingMatchField.getEdgeSize() + 2 * FRAME_SIZE);
+        boardPane.setStyle("-fx-border-width: " + FRAME_SIZE);
 
         fieldsMap = new HashMap<>();
         for (int x = 0; x < actShowingMatchField.getEdgeSize(); x++) {
@@ -114,8 +114,8 @@ public class SolverSceneController {
             for (int y = 0; y < actShowingMatchField.getEdgeSize(); y++) {
                 final StackPane cell = new StackPane();
                 cell.setPrefSize(getFieldPaneSize(), getFieldPaneSize());
-                cell.setLayoutX(frameSize + x * getFieldPaneSize());
-                cell.setLayoutY(frameSize + y * getFieldPaneSize());
+                cell.setLayoutX(FRAME_SIZE + x * getFieldPaneSize());
+                cell.setLayoutY(FRAME_SIZE + y * getFieldPaneSize());
                 cell.getStyleClass().add("field");
 
                 boardPane.getChildren().add(cell);
@@ -141,7 +141,7 @@ public class SolverSceneController {
                     final HintField hintField = (HintField) cellField;
                     final Label amountLabel = new Label(hintField.getAmount() + " " + hintField.getArrowDirection().toCharacter());
 
-                    final int fontSize = gameSize / (actShowingMatchField.getEdgeSize() * 3);
+                    final int fontSize = GAME_SIZE / (actShowingMatchField.getEdgeSize() * 3);
                     amountLabel.setFont(new Font(fontSize));
 
                     if (hintField.getFieldState() == Field.State.BLACK) {
@@ -239,6 +239,6 @@ public class SolverSceneController {
     }
 
     private int getFieldPaneSize() {
-        return gameSize / actShowingMatchField.getEdgeSize();
+        return GAME_SIZE / actShowingMatchField.getEdgeSize();
     }
 }
