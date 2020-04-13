@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 
 import java.util.Objects;
 
-public class StandardField extends AbstractField {
+public final class StandardField extends AbstractField {
 
     @JsonCreator
     public StandardField() {

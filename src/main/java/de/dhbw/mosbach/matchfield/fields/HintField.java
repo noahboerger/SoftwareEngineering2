@@ -6,7 +6,7 @@ import de.dhbw.mosbach.matchfield.utils.Direction;
 
 import java.util.Objects;
 
-public class HintField extends AbstractField {
+public final class HintField extends AbstractField {
 
     private final Direction arrowDirection;
     private final int amount;

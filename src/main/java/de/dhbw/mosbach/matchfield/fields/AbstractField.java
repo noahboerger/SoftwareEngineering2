@@ -12,13 +12,13 @@ abstract class AbstractField implements Field {
 
     @Override
     @JsonIgnore
-    public State getFieldState() {
+    public final State getFieldState() {
         return fieldState;
     }
 
     @Override
     @JsonIgnore
-    public void setFieldState(final State fieldState) {
+    public final void setFieldState(final State fieldState) {
         this.fieldState = fieldState;
     }
 
