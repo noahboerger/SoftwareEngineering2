@@ -57,9 +57,8 @@ public class YajisanKazusanSolver {
                 doEducatedGuess();
             }
             doBacktracking();
-
         }
-        System.out.println("Solved " + solvedMatchField.getEdgeSize() + "x" + solvedMatchField.getEdgeSize() + " Matchfield in " + (System.currentTimeMillis() - start) + " Milis!");
+        System.out.printf("Solved %1$dx%1$d Matchfield in %2$d Milis!", solvedMatchField.getEdgeSize(), System.currentTimeMillis() - start);
     }
 
     private void setImpossibleHintFieldsToBlack() {
