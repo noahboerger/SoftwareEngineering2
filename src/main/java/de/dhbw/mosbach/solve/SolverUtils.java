@@ -7,6 +7,7 @@ import de.dhbw.mosbach.matchfield.fields.StandardField;
 import de.dhbw.mosbach.matchfield.utils.Direction;
 import de.dhbw.mosbach.matchfield.utils.FieldIndex;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -173,8 +174,8 @@ final class SolverUtils {
         if (solutionDTOList.size() == 1) {
             return solutionDTOList.get(0);
         }
-        final Stack<FieldIndex> blacks = solutionDTOList.get(0).toBeBlackedFields;
-        final Stack<FieldIndex> white = solutionDTOList.get(0).toBeWhitedFields;
+        final Deque<FieldIndex> blacks = solutionDTOList.get(0).toBeBlackedFields;
+        final Deque<FieldIndex> white = solutionDTOList.get(0).toBeWhitedFields;
         for (final BlackAndWhiteSolutionDTO actSolution : solutionDTOList) {
             blacks.removeAll(actSolution.toBeWhitedFields);
             white.removeAll(actSolution.toBeBlackedFields);
@@ -203,13 +204,13 @@ final class SolverUtils {
             } else {
                 //Farbe noch nicht bekannt
                 if (isAbleToBeBlack(matchField, actField)) {
-                    final Stack<FieldIndex> blackStack = new Stack<>();
+                    final Deque<FieldIndex> blackStack = new ArrayDeque<>();
                     blackStack.add(matchField.getIndexOfField(actField));
-                    solutionsList.add(new BlackAndWhiteSolutionDTO(blackStack, new Stack<>()));
+                    solutionsList.add(new BlackAndWhiteSolutionDTO(blackStack, new ArrayDeque<>()));
                 }
-                final Stack<FieldIndex> whiteStack = new Stack<>();
+                final Deque<FieldIndex> whiteStack = new ArrayDeque<>();
                 whiteStack.add(matchField.getIndexOfField(actField));
-                solutionsList.add(new BlackAndWhiteSolutionDTO(new Stack<>(), whiteStack));
+                solutionsList.add(new BlackAndWhiteSolutionDTO(new ArrayDeque<>(), whiteStack));
             }
         } else {
             //Mehrere Felder übrig
@@ -313,22 +314,28 @@ final class SolverUtils {
 
     //Statische DTO-Klasse zum zurückgeben eines Stacks an zu schwärzenden und weißen Feldern
     static class BlackAndWhiteSolutionDTO {
-        final Stack<FieldIndex> toBeBlackedFields;
-        final Stack<FieldIndex> toBeWhitedFields;
+        final Deque<FieldIndex> toBeBlackedFields;
+        final Deque<FieldIndex> toBeWhitedFields;
 
-        private BlackAndWhiteSolutionDTO(final Stack<FieldIndex> toBeBlackedFields, final Stack<FieldIndex> toBeWhitedFields) {
+        private BlackAndWhiteSolutionDTO(final Deque<FieldIndex> toBeBlackedFields, final Deque<FieldIndex> toBeWhitedFields) {
             this.toBeBlackedFields = toBeBlackedFields;
             this.toBeWhitedFields = toBeWhitedFields;
         }
 
         private BlackAndWhiteSolutionDTO() {
-            this(new Stack<>(), new Stack<>());
+            this(new ArrayDeque<>(), new ArrayDeque<>());
         }
 
         private static BlackAndWhiteSolutionDTO copyOf(final BlackAndWhiteSolutionDTO solution) {
-            @SuppressWarnings("unchecked") //Typ-Sicher, da der Typ des geclonten Stacks dem des vorherigen entspricht
-            final BlackAndWhiteSolutionDTO copy = new BlackAndWhiteSolutionDTO((Stack<FieldIndex>) solution.toBeBlackedFields.clone(), (Stack<FieldIndex>) solution.toBeWhitedFields.clone());
-            return copy;
+            try {
+                @SuppressWarnings("unchecked") //Wenn clone-Methode vorhanden und ausführbar muss der Typ passen
+                        Deque<FieldIndex> clonedBlack = (Deque<FieldIndex>) solution.toBeWhitedFields.getClass().getMethod("clone").invoke(solution.toBeBlackedFields);
+                @SuppressWarnings("unchecked") //Wenn clone-Methode vorhanden und ausführbar muss der Typ passen
+                        Deque<FieldIndex> clonedWhite = (Deque<FieldIndex>) solution.toBeWhitedFields.getClass().getMethod("clone").invoke(solution.toBeWhitedFields);
+                return new BlackAndWhiteSolutionDTO(clonedBlack, clonedWhite);
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                throw new UnsupportedOperationException("This type can not be cloned!");
+            }
         }
     }
 }

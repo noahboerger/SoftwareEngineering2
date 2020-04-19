@@ -13,7 +13,7 @@ public class YajisanKazusanSolver {
     private final MatchField unsolvedMatchField;
     private final MatchField solvedMatchField;
     private final List<FieldIndex> solvingOrderList = new ArrayList<>();
-    private final Stack<FieldIndex> backtrackingStack = new Stack<>();
+    private final Deque<FieldIndex> backtrackingStack = new ArrayDeque<>();
     private final Set<FieldIndex> potentialMustBeWhiteStack = new HashSet<>();
     private final Set<FieldIndex> alreadySolvedFieldIndexes = new HashSet<>();
     private boolean isSolved;
@@ -58,7 +58,7 @@ public class YajisanKazusanSolver {
             }
             doBacktracking();
         }
-        System.out.printf("Solved %1$dx%1$d Matchfield in %2$d Milis!", solvedMatchField.getEdgeSize(), System.currentTimeMillis() - start);
+        System.out.printf("Solved %1$dx%1$d Matchfield in %2$d Milis!%n", solvedMatchField.getEdgeSize(), System.currentTimeMillis() - start);
     }
 
     private void setImpossibleHintFieldsToBlack() {
@@ -150,7 +150,7 @@ public class YajisanKazusanSolver {
         if (SolverUtils.isSolvedCorrectly(solvedMatchField)) {
             return;
         }
-        if (backtrackingStack.empty()) {
+        if (backtrackingStack.isEmpty()) {
             throw new IllegalStateException();
         }
         final FieldIndex lastGuess = backtrackingStack.pop();
