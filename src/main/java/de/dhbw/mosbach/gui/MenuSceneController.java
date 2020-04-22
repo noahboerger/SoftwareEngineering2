@@ -90,7 +90,7 @@ public class MenuSceneController {
                         "Öffne hierzu einfach auf dem Startbildschirm eine JSON-Datei.\n" +
                         "Ziehe diese hierzu in das Fenster oder gebe den Pfad ein.\n" +
                         "Zum betrachten der Lösung drücke dann auf \"Spiel lösen\"\n\n" +
-                        "Viel Spaß wünscht der Entwickler: Noah Börger";
+                        "Viel Spaß beim Lösen der Rätsel!";
         manualAlert.setContentText(userManual);
         manualAlert.showAndWait();
     }

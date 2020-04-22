@@ -85,7 +85,7 @@ public class SolverSceneController {
                         "Das ganze Spiel direkt lösen: (F6)\n" +
                         "Einen Schritt zurück gehen: (F7)\n" +
                         "Oder das aktuelle Spielfeld schließen: (F8)\n\n" +
-                        "Viel Spaß wünscht der Entwickler: Noah Börger";
+                        "Viel Spaß beim Lösen der Rätsel!";
         manualAlert.setContentText(userManual);
         manualAlert.showAndWait();
     }
