@@ -47,7 +47,7 @@ public class SolverSceneController {
 
     private int actStep;
 
-    public void init(final YajisanKazusanSolver solver) {
+    void init(final YajisanKazusanSolver solver) {
         this.solver = solver;
         this.actShowingMatchField = solver.getUnsolvedMatchField();
         actStep = 0;
@@ -91,7 +91,7 @@ public class SolverSceneController {
     }
 
     @FXML
-    public void onKeyboardPress(final KeyEvent event) {
+    void onKeyboardPress(final KeyEvent event) {
         if (event.getCode() == KeyCode.F5) {
             doStep();
         } else if (event.getCode() == KeyCode.F6) {
@@ -153,7 +153,7 @@ public class SolverSceneController {
         }
     }
 
-    public boolean calculateSolutionIfNotDone(final boolean fullSolution) {
+    private boolean calculateSolutionIfNotDone(final boolean fullSolution) {
         if (solution == null || solvedMatchField == null) {
             final LoadingDialog loadingDialog = new LoadingDialog(menuBar.getScene().getWindow(), "Spielfeld wird gelöst...");
 
@@ -219,13 +219,17 @@ public class SolverSceneController {
 
     private void doBackToMenu() {
         final Stage activeStage = (Stage) menuBar.getScene().getWindow();
+        final FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/MenuScene.fxml"));
         Parent menu = null;
         try {
-            menu = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("fxml/MenuScene.fxml")));
+            menu = loader.load();
         } catch (IOException e) {
-            System.exit(1);
+            System.exit(0);
         }
+
         final Scene menuScene = new Scene(menu);
+        final MenuSceneController menuSceneController=loader.getController();
+        menu.setOnKeyPressed(menuSceneController::onKeyboardPress);
         menuScene.getStylesheets().add(Objects.requireNonNull(getClass().getClassLoader().getResource("css/style.css")).toExternalForm());
         activeStage.setScene(menuScene);
     }

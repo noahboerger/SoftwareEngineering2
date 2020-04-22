@@ -12,9 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import javafx.scene.input.DragEvent;
-import javafx.scene.input.Dragboard;
-import javafx.scene.input.TransferMode;
+import javafx.scene.input.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -41,42 +39,8 @@ public class MenuSceneController {
     }
 
     @FXML
-    public void handleStartMainScene(final ActionEvent event) throws IOException {
-        final JSONFileValidator analyzer = new JSONFileValidator(filePathField.getText());
-        if (analyzer.getValidationResult() != JSONFileValidator.ValidationResult.VALID_FILE) {
-            final Alert fileNotValidAlert = new Alert(Alert.AlertType.ERROR);
-            fileNotValidAlert.setTitle("Unpassende Datei ausgewählt!");
-            fileNotValidAlert.setHeaderText(null);
-            fileNotValidAlert.setContentText(analyzer.getValidationResult().getErrorMessage());
-            fileNotValidAlert.showAndWait();
-            return;
-        }
-        final MatchFieldParser parser = new JSONMatchFieldParser(filePathField.getText());
-        final MatchFieldParser.ParsingValidationResult result = parser.getParsingValidationResult();
-        if (result != MatchFieldParser.ParsingValidationResult.PARSED_SUCCESSFUL) {
-            final Alert fileNotValidAlert = new Alert(Alert.AlertType.ERROR);
-            fileNotValidAlert.setTitle("Datei ist korrupt!");
-            fileNotValidAlert.setHeaderText(null);
-            if (result == null) {
-                fileNotValidAlert.setContentText("Ein unerwarteter Fehler ist aufgetreten!");
-            } else {
-                fileNotValidAlert.setContentText(result.getErrorMessage());
-            }
-            fileNotValidAlert.showAndWait();
-            return;
-        }
-        final Stage activeStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        final FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/SolverScene.fxml"));
-        final Parent solver = loader.load();
-
-        final SolverSceneController solverSceneController = loader.getController();
-        solverSceneController.init(new YajisanKazusanSolver(parser.getMatchFieldOfParsedFile().orElseThrow(() -> new IllegalStateException("MatchField can not be null here!"))));
-
-        final Scene solverScene = new Scene(solver);
-        solverScene.setOnKeyPressed(solverSceneController::onKeyboardPress);
-        solverScene.getStylesheets().add(Objects.requireNonNull(getClass().getClassLoader().getResource("css/style.css")).toExternalForm());
-
-        activeStage.setScene(solverScene);
+    public void handleStartMainScene(final ActionEvent event) {
+        startSolverScene();
     }
 
     //Menu-Bar
@@ -126,5 +90,57 @@ public class MenuSceneController {
             }
         }
         event.consume();
+    }
+
+    @FXML
+    public void onKeyboardPress(final KeyEvent event) {
+        if (event.getCode() == KeyCode.F5 || event.getCode() == KeyCode.F6) {
+            startSolverScene();
+        } else if (event.getCode() == KeyCode.F8) {
+            System.exit(0);
+        }
+    }
+
+    private void startSolverScene() {
+        final JSONFileValidator analyzer = new JSONFileValidator(filePathField.getText());
+        if (analyzer.getValidationResult() != JSONFileValidator.ValidationResult.VALID_FILE) {
+            final Alert fileNotValidAlert = new Alert(Alert.AlertType.ERROR);
+            fileNotValidAlert.setTitle("Unpassende Datei ausgewählt!");
+            fileNotValidAlert.setHeaderText(null);
+            fileNotValidAlert.setContentText(analyzer.getValidationResult().getErrorMessage());
+            fileNotValidAlert.showAndWait();
+            return;
+        }
+        final MatchFieldParser parser = new JSONMatchFieldParser(filePathField.getText());
+        final MatchFieldParser.ParsingValidationResult result = parser.getParsingValidationResult();
+        if (result != MatchFieldParser.ParsingValidationResult.PARSED_SUCCESSFUL) {
+            final Alert fileNotValidAlert = new Alert(Alert.AlertType.ERROR);
+            fileNotValidAlert.setTitle("Datei ist korrupt!");
+            fileNotValidAlert.setHeaderText(null);
+            if (result == null) {
+                fileNotValidAlert.setContentText("Ein unerwarteter Fehler ist aufgetreten!");
+            } else {
+                fileNotValidAlert.setContentText(result.getErrorMessage());
+            }
+            fileNotValidAlert.showAndWait();
+            return;
+        }
+        final Stage activeStage = (Stage) filePathField.getScene().getWindow();
+        final FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/SolverScene.fxml"));
+        Parent solver = null;
+        try {
+            solver = loader.load();
+        } catch (IOException e) {
+            System.exit(0);
+        }
+
+        final SolverSceneController solverSceneController = loader.getController();
+        solverSceneController.init(new YajisanKazusanSolver(parser.getMatchFieldOfParsedFile().orElseThrow(() -> new IllegalStateException("MatchField can not be null here!"))));
+
+        final Scene solverScene = new Scene(solver);
+        solverScene.setOnKeyPressed(solverSceneController::onKeyboardPress);
+        solverScene.getStylesheets().add(Objects.requireNonNull(getClass().getClassLoader().getResource("css/style.css")).toExternalForm());
+
+        activeStage.setScene(solverScene);
     }
 }

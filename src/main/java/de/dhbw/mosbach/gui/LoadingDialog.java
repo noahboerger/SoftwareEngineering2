@@ -19,28 +19,28 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.Window;
 
-public class LoadingDialog {
+class LoadingDialog {
 
-    public final ObservableList<Void> resultNotificationList = FXCollections.observableArrayList();
+    private final ObservableList<Void> resultNotificationList = FXCollections.observableArrayList();
     private final String text;
     private final ProgressIndicator progressIndicator = new ProgressIndicator(ProgressIndicator.INDETERMINATE_PROGRESS);
     private final Stage dialogStage = new Stage(StageStyle.UNDECORATED);
 
-    public LoadingDialog(final Window owner, final String text) {
+    LoadingDialog(final Window owner, final String text) {
         dialogStage.initModality(Modality.WINDOW_MODAL);
         dialogStage.initOwner(owner);
         dialogStage.setResizable(false);
         this.text = text;
     }
 
-    public void addTaskEndNotification(final Runnable notify) {
+    void addTaskEndNotification(final Runnable notify) {
         resultNotificationList.addListener((ListChangeListener<Void>) n -> {
             resultNotificationList.clear();
             notify.run();
         });
     }
 
-    public void executeRunnable(final Runnable func) {
+    void executeRunnable(final Runnable func) {
         setupDialog();
         runRunnable(func);
     }
