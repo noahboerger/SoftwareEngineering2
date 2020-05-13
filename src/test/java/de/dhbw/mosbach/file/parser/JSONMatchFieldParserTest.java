@@ -1,7 +1,7 @@
 package de.dhbw.mosbach.file.parser;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -14,21 +14,21 @@ public class JSONMatchFieldParserTest {
     public void parseValidFileTest() throws URISyntaxException {
         URL url = getClass().getClassLoader().getResource("parser/Test_Valid.json");
         MatchFieldParser parser = new JSONMatchFieldParser(Paths.get(Objects.requireNonNull(url).toURI()).toString());
-        Assert.assertEquals(JSONMatchFieldParser.ParsingValidationResult.PARSED_SUCCESSFUL, parser.getParsingValidationResult());
-        Assert.assertTrue(parser.getMatchFieldOfParsedFile().isPresent());
-        Assert.assertEquals(5, parser.getMatchFieldOfParsedFile().get().getEdgeSize());
+        Assertions.assertEquals(JSONMatchFieldParser.ParsingValidationResult.PARSED_SUCCESSFUL, parser.getParsingValidationResult());
+        Assertions.assertTrue(parser.getMatchFieldOfParsedFile().isPresent());
+        Assertions.assertEquals(5, parser.getMatchFieldOfParsedFile().get().getEdgeSize());
     }
 
     @Test
     public void parseNotExistingFileTest() {
         MatchFieldParser parser = new JSONMatchFieldParser("resources/NotExisting.json");
-        Assert.assertEquals(JSONMatchFieldParser.ParsingValidationResult.FILE_LOADING_ERROR, parser.getParsingValidationResult());
+        Assertions.assertEquals(JSONMatchFieldParser.ParsingValidationResult.FILE_LOADING_ERROR, parser.getParsingValidationResult());
     }
 
     @Test
     public void parseInvalidFileTest() throws URISyntaxException {
         URL url = getClass().getClassLoader().getResource("parser/Test_Invalid.json");
         MatchFieldParser parser = new JSONMatchFieldParser(Paths.get(Objects.requireNonNull(url).toURI()).toString());
-        Assert.assertEquals(JSONMatchFieldParser.ParsingValidationResult.FILE_NOT_VALID, parser.getParsingValidationResult());
+        Assertions.assertEquals(JSONMatchFieldParser.ParsingValidationResult.FILE_NOT_VALID, parser.getParsingValidationResult());
     }
 }

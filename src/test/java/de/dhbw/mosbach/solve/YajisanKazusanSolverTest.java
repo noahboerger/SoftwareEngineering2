@@ -7,9 +7,9 @@ import de.dhbw.mosbach.matchfield.fields.HintField;
 import de.dhbw.mosbach.matchfield.fields.StandardField;
 import de.dhbw.mosbach.matchfield.utils.Direction;
 import de.dhbw.mosbach.matchfield.utils.FieldIndex;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public class YajisanKazusanSolverTest {
     private MatchField unsolvedTestMatchField;
     private MatchField solvedTestMatchField;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         unsolvedTestMatchField = TestUtils.getUnsolvedTestMatchField();
         solvedTestMatchField = TestUtils.getSolvedTestMatchField();
@@ -29,12 +29,12 @@ public class YajisanKazusanSolverTest {
 
     @Test
     public void getSolvedMatchFieldTest() {
-        Assert.assertEquals(solvedTestMatchField, testSolver.getSolvedMatchField());
+        Assertions.assertEquals(solvedTestMatchField, testSolver.getSolvedMatchField());
     }
 
     @Test
     public void getUnsolvedMatchFieldTest() {
-        Assert.assertEquals(unsolvedTestMatchField, testSolver.getUnsolvedMatchField());
+        Assertions.assertEquals(unsolvedTestMatchField, testSolver.getUnsolvedMatchField());
     }
 
     @Test
@@ -43,12 +43,12 @@ public class YajisanKazusanSolverTest {
 
         for (int x = 0; x < unsolvedTestMatchField.getEdgeSize(); x++) {
             for (int y = 0; y < unsolvedTestMatchField.getEdgeSize(); y++) {
-                Assert.assertTrue(solvingOrder.contains(new FieldIndex(x, y)));
+                Assertions.assertTrue(solvingOrder.contains(new FieldIndex(x, y)));
             }
         }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void solveUnsolvableMatchFieldTest() {
         List<List<Field>> fieldList = new ArrayList<>();
         List<Field> column1 = new ArrayList<>();
@@ -63,6 +63,6 @@ public class YajisanKazusanSolverTest {
         fieldList.add(column2);
 
         YajisanKazusanSolver solver = new YajisanKazusanSolver(new MatchField(fieldList));
-        solver.getSolvedMatchField();
+        Assertions.assertThrows(IllegalStateException.class, () -> solver.getSolvedMatchField());
     }
 }
