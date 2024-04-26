@@ -1,4 +1,4 @@
-open module SoftwareEngineering2 {
+open module YajisanKazusanSolver {
     requires javafx.fxml;
     requires javafx.controls;
     requires javafx.graphics;

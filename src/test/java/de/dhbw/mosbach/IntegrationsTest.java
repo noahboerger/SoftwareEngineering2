@@ -16,7 +16,7 @@ import java.util.Objects;
 public class IntegrationsTest {
 
     @Test
-    public void SoftwareEngineering2IT() throws URISyntaxException {
+    public void runYajisanKazusanSolverIT() throws URISyntaxException {
         URL url = getClass().getClassLoader().getResource("parser/Test_Valid.json");
 
         FileValidator validator = new JSONFileValidator(Paths.get(Objects.requireNonNull(url).toURI()).toString());
